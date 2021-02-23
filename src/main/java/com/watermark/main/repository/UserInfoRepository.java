@@ -17,6 +17,6 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     @Override
     UserInfo save(UserInfo userInfo);
 
-    //void deleteByUid(long uid);
-    //void deleteByUsername(String username);
+    void deleteByUid(long uid);
+    void deleteByUsername(String username);
 }
