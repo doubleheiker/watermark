@@ -25,12 +25,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         //TODO：从数据库表中获取权限，首先需要拿到当前登录用户对象
         Subject subject = SecurityUtils.getSubject();
         //获取principal
-        UserInfo currentUser = (UserInfo) subject.getPrincipal();
-
-        if (currentUser.getPerms() == null) {
-            info.addStringPermission("");
-        }
-        else info.addStringPermission(currentUser.getPerms());
+        //UserInfo currentUser = (UserInfo) subject.getPrincipal();
 
         return info;
     }

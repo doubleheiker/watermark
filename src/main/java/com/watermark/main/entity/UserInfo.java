@@ -1,14 +1,18 @@
 package com.watermark.main.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class UserInfo {
+@AllArgsConstructor
+public class UserInfo implements Serializable {
 
     @Id
     @GeneratedValue
@@ -20,7 +24,12 @@ public class UserInfo {
     private String password;//密码
     private String salt;//密码盐
 
-    private String perms;//权限
+    private String state;//用户状态
+
+    //用户 - 角色 多对多
+    @ManyToMany(fetch = FetchType.EAGER) //立即从数据库中进行加载数据
+    @JoinTable(name = "SysUserRole", joinColumns = { @JoinColumn(name = "uid") }, inverseJoinColumns ={@JoinColumn(name = "rid") })
+    private List<SysRole> roleList;
 
     /**
      * 密码盐
@@ -37,7 +46,7 @@ public class UserInfo {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", salt='" + salt + '\'' +
-                ", perms='" + perms + '\'' +
+                ", state='" + state + '\'' +
                 '}';
     }
 
