@@ -1,22 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>数据库水印系统</title>
 </head>
 <body>
-<a th:href="@{/toLogin}">
-    <span>登录</span>
-</a>
-<p th:text="${username}"></p>
 <hr>
+<p th:text="${msg}" style="color:red;"></p>
 
-<a th:href="@{/user/add}">
+<h1>首页</h1>
+
+<div th:if="${session.loginUser==null}">
+    <a th:href="@{/toLogin}">
+        <span>登录</span>
+    </a>
+    |
+    <a th:href="@{/toRegister}">
+        <span>注册</span>
+    </a>
+</div>
+
+<p th:text="${username}"></p>
+
+<a th:href="@{/user/userInfo}">
     <span>add</span>
 </a>
 |
-<a th:href="@{/user/update}">
+<a th:href="@{/user/userInfoAdd}">
     <span>update</span>
+</a>
+|
+<a th:href="@{/user/userInfoDel}">
+    <span>del</span>
 </a>
 
 </body>

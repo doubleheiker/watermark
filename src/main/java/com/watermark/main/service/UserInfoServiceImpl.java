@@ -37,7 +37,7 @@ public class UserInfoServiceImpl implements UserInfoService{
     }*/
 
     @Override
-    public UserInfo save(String username, String password) {
+    public UserInfo register(String username, String password) {
         UserInfo userInfo=new UserInfo();
         //userInfo.setUid(uid);
         userInfo.setUsername(username);
@@ -53,7 +53,13 @@ public class UserInfoServiceImpl implements UserInfoService{
         SimpleHash hash = new SimpleHash(algorithmName, password, salt, hashIterations);
         userInfo.setPassword(hash.toString());
 
-        return userInfoRepository.save(userInfo);
+        //验证该用户名是否被使用
+        UserInfo user = findByUsername(username);
+        if(user == null) {
+            return userInfoRepository.save(userInfo);
+        } else {
+            return null;
+        }
     }
 
     @Override
