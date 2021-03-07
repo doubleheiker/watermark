@@ -8,5 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Repository
 public interface SysRoleRepository extends JpaRepository<SysRole, Long> {
-    public SysRole findByRid(Long id);
+    SysRole findByRid(Long id);
+    SysRole findByRole(String role);
 }

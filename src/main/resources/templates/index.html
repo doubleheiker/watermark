@@ -22,17 +22,36 @@
 
 <p th:text="${username}"></p>
 
-<a th:href="@{/user/userInfo}">
-    <span>add</span>
+<a th:href="@{/toSearch}">
+    <span>search</span>
 </a>
 |
-<a th:href="@{/user/userInfoAdd}">
-    <span>update</span>
+<a th:href="@{/toDetect}">
+    <span>detect</span>
 </a>
-|
-<a th:href="@{/user/userInfoDel}">
-    <span>del</span>
-</a>
+
+<div shiro:hasRole="user">
+    |
+    <a th:href="@{/user/embed}">
+        <span>embed</span>
+    </a>
+    |
+</div>
+
+<div shiro:hasRole="admin">
+    <a th:href="@{/admin/userInfo}">
+        <span>查询用户</span>
+    </a>
+    |
+    <a th:href="@{/admin/userInfoAdd}">
+        <span>添加用户</span>
+    </a>
+    |
+    <a th:href="@{/admin/userInfoDel}">
+        <span>删除用户</span>
+    </a>
+</div>
+
 
 </body>
 </html>

@@ -30,6 +30,15 @@ public class indexController {
         return "index";
     }
 
+    @GetMapping("/toSearch")
+    public String toSearch() {
+        return "search";
+    }
+
+    @GetMapping("/toDetect")
+    public String toDetect() {
+        return "detect";
+    }
 
     @GetMapping("/toLogin")
     public String toLogin() {

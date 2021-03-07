@@ -12,6 +12,6 @@ public interface UserInfoService {
     //int count();
     int deleteByUid(String username);
     //int updatePassword(String username, String oldpassword, String newpassword);
-    //TODO:用户角色、权限控制接口
+    //TODO:用户角色、权限控制接口、修改密码
 
 }

@@ -1,23 +1,25 @@
 package com.watermark.main.service;
 
+import com.watermark.main.entity.SysRole;
 import com.watermark.main.entity.UserInfo;
+import com.watermark.main.repository.SysRoleRepository;
 import com.watermark.main.repository.UserInfoRepository;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService{
     private final UserInfoRepository userInfoRepository;
+    private final SysRoleRepository sysRoleRepository;
 
-    public UserInfoServiceImpl(UserInfoRepository userInfoRepository) {
+    public UserInfoServiceImpl(UserInfoRepository userInfoRepository, SysRoleRepository sysRoleRepository) {
         this.userInfoRepository = userInfoRepository;
+        this.sysRoleRepository = sysRoleRepository;
     }
 
     @Override
@@ -26,21 +28,20 @@ public class UserInfoServiceImpl implements UserInfoService{
 
         return userInfoRepository.findByUsername(username);
     }
-    /*public Page<UserInfo> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
-        Page<UserInfo> UserInfos=userInfoRepository.findAll(pageable);
 
-        return UserInfos;
-    }
-    public int count() {
-        return this.findAll(0, 100000).getSize();
-    }*/
-
+    //只用于用户注册
     @Override
     public UserInfo register(String username, String password) {
         UserInfo userInfo=new UserInfo();
+
+        //添加用户角色
+        SysRole sysRole = sysRoleRepository.findByRole("user");
+        List<SysRole> sysRoles = new LinkedList<>();
+        sysRoles.add(sysRole);
+
         //userInfo.setUid(uid);
         userInfo.setUsername(username);
+        userInfo.setRoleList(sysRoles);
 
         String rawSalt = UUID.randomUUID().toString();//初始盐
         userInfo.setSalt(rawSalt);
