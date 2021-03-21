@@ -1,8 +1,11 @@
 package com.watermark.main.controller;
 
+import com.watermark.main.DPWA.Dataset;
 import com.watermark.main.entity.UserInfo;
 import com.watermark.main.repository.UserInfoRepository;
 import com.watermark.main.service.UserInfoServiceImpl;
+import com.watermark.main.utils.ReadFile;
+import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
@@ -11,6 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 
 @Controller
@@ -38,6 +44,45 @@ public class indexController {
     @GetMapping("/toDetect")
     public String toDetect() {
         return "detect";
+    }
+    @PostMapping("/detect")
+    public String detect(@RequestParam("file") MultipartFile file, @RequestParam("key") String K, ModelMap mp) throws Exception {
+        //判断文件是否为空
+        if(file.isEmpty()){
+            mp.addAttribute("result_file", "上传失败，请选择合适的文件上传！");
+            return "/user/embed";
+        }
+        File toFile = ReadFile.multipartFileToFile(file);
+
+        try {
+            //转换MutipartFile类型为File类型
+            Dataset dataset;
+            //读取并处理上传的文件为dataset类型
+            dataset = ReadFile.readTable(toFile);
+
+            //调用检测API
+            WaterMarking waterMark = new WaterMarking();
+            //todo:markedLine和M值由用户决定
+            Double M = 1000d;
+            Integer markedLine = 10;
+            boolean detectResult = waterMark.Detect(dataset, K, M, markedLine);
+            String res;
+
+            if (detectResult) {
+                res = "检测到水印！";
+            } else {
+                res = "未检测到水印！";
+            }
+
+            mp.addAttribute("result_file", "上传成功");
+            mp.addAttribute("detectResult", res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //出现异常，则告诉页面失败
+            mp.addAttribute("result_file", "上传失败");
+        }
+
+        return "/detect";
     }
 
     @GetMapping("/toLogin")

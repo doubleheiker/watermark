@@ -7,6 +7,7 @@ import com.watermark.main.repository.DataSourceRepository;
 import com.watermark.main.testfunction.Add;
 import com.watermark.main.utils.ReadFile;
 import com.watermark.main.utils.WriteFile;
+import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Controller;
@@ -42,7 +43,6 @@ public class UserFuncController {
     }
     @PostMapping("/embed")
     public String embed(@RequestParam("file") MultipartFile file, @RequestParam("markedline") String text, ModelMap mp) throws Exception {
-        System.out.println(text);
         //判断文件是否为空
         if(file.isEmpty()){
             mp.addAttribute("result_file", "上传失败，请选择合适的文件上传！");
@@ -67,13 +67,36 @@ public class UserFuncController {
             //获取上传时的文件名
             String originalFilename = file.getOriginalFilename();
             //设置存到服务器的文件名:hash(原文件名+时间戳)，但这样后缀名没了
-            //TODO：若有后缀名尽可能保存后缀名
             String fileName = originalFilename + currentTime;
             Md5Hash hashName = new Md5Hash(fileName);
             //注意是路径+hashName
             File targetFile = new File(path + hashName.toString());
             //如果之前的 String path = "d:/upload/" 没有在最后加 / ，那就要在 path 后面 + "/"
 
+            //判断文件父目录是否存在
+            if(!targetFile.getParentFile().exists()){
+                //不存在就创建一个
+                targetFile.getParentFile().mkdir();
+            }
+
+            //转换MutipartFile类型为File类型
+            Dataset dataset;
+            //读取并处理上传的文件为dataset类型
+            dataset = ReadFile.readTable(toFile);
+
+            //调用嵌入API
+            WaterMarking waterMark = new WaterMarking();
+            //todo:K和M的值由用户决定
+            //暂时固定K和M的值
+            String K = "123";
+            Double M = 1000d;
+            Integer markedLine = 10;
+            Dataset embdedDataset = waterMark.Embed(K, M, dataset, markedLine);
+
+            //转换dataset类型为String并写入到服务器指定，路径
+            WriteFile.WriteTable(embdedDataset, targetFile);
+
+            //todo:可能需要修改文件信息数据库的结构，添加K， M，markedLine属性
             //将文件信息保存到数据库
             DataSource dataSource = new DataSource();
             dataSource.setHashName(hashName.toString());
@@ -82,26 +105,6 @@ public class UserFuncController {
             dataSource.setUploadTime(date);
             dataSource.setUser(user);
             dataSourceRepository.save(dataSource);
-
-            //判断文件父目录是否存在
-            if(!targetFile.getParentFile().exists()){
-                //不存在就创建一个
-                targetFile.getParentFile().mkdir();
-            }
-
-            //TODO:调用嵌入算法处理上传的文件
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//            String str = null;
-//            while((str = bufferedReader.readLine()) != null)
-//            {
-//                System.out.println(str);
-//            }
-            //转换MutipartFile类型为File类型
-            Dataset dataset;
-            //读取并处理上传的文件为dataset类型
-            dataset = ReadFile.readTable(toFile);
-            //转换dataset类型为String并写入到服务器指定，路径
-            WriteFile.WriteTable(dataset, targetFile);
 
             //告诉页面上传成功了
             mp.addAttribute("result_file", "上传成功");
@@ -121,4 +124,6 @@ public class UserFuncController {
         mp.addAttribute("res", res);
         return  "/user/embed";
     }
+
+
 }

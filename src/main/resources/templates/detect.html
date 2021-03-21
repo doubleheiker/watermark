@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-Detect
+<h1>Detect</h1>
+<form class="form-signin" th:action="@{/detect}" method="post" enctype="multipart/form-data">
+    <p><input type="file" name="file"/></p>
+    <p>请输入检验密钥：<input type="text" name="key"/></p>
+    <p><input type="submit" value="上传"/></p>
+    <p style="color: red" th:text="${result_file}" th:if="${not #strings.isEmpty(result_file)}"></p>
+</form>
+<p>检测结果: <span th:text="${detectResult}"></span></p>
 </body>
 </html>
