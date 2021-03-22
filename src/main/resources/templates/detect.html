@@ -8,7 +8,11 @@
 <h1>Detect</h1>
 <form class="form-signin" th:action="@{/detect}" method="post" enctype="multipart/form-data">
     <p><input type="file" name="file"/></p>
-    <p>请输入检验密钥：<input type="text" name="key"/></p>
+    <p>
+        请输入检验密钥：<input type="text" name="key"/>
+        <br>输入安全参数M：<input type="text" name="M"/>
+        <br>输入安全参数 L： <input type="text" name="markedline"/>
+    </p>
     <p><input type="submit" value="上传"/></p>
     <p style="color: red" th:text="${result_file}" th:if="${not #strings.isEmpty(result_file)}"></p>
 </form>

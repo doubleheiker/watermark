@@ -5,6 +5,7 @@ import com.watermark.main.entity.UserInfo;
 import com.watermark.main.repository.UserInfoRepository;
 import com.watermark.main.service.UserInfoServiceImpl;
 import com.watermark.main.utils.ReadFile;
+import com.watermark.main.utils.wmoperate.JudgeUtils;
 import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -46,13 +47,18 @@ public class indexController {
         return "detect";
     }
     @PostMapping("/detect")
-    public String detect(@RequestParam("file") MultipartFile file, @RequestParam("key") String K, ModelMap mp) throws Exception {
+    public String detect(@RequestParam("file") MultipartFile file, @RequestParam("key") String K,
+                         @RequestParam("markedline") String ml, @RequestParam("M") String m, ModelMap mp) throws Exception {
         //判断文件是否为空
         if(file.isEmpty()){
             mp.addAttribute("result_file", "上传失败，请选择合适的文件上传！");
-            return "/user/embed";
+            return "/detect";
         }
         File toFile = ReadFile.multipartFileToFile(file);
+        if (ml == null) {
+            mp.addAttribute("result_file", "上传失败，请输入正确的参数L！！");
+            return "/detect";
+        }
 
         try {
             //转换MutipartFile类型为File类型
@@ -62,9 +68,13 @@ public class indexController {
 
             //调用检测API
             WaterMarking waterMark = new WaterMarking();
-            //todo:markedLine和M值由用户决定
-            Double M = 1000d;
-            Integer markedLine = 10;
+            Double M = Double.parseDouble(m);
+            Integer markedLine = Integer.parseInt(ml) - 1;
+
+            //判断markedLine是否超过最大列，以及所选列是否是数值型
+            JudgeUtils judgeUtils = new JudgeUtils();
+            judgeUtils.JudgeMarkedLine(dataset, markedLine);
+
             boolean detectResult = waterMark.Detect(dataset, K, M, markedLine);
             String res;
 
@@ -79,7 +89,12 @@ public class indexController {
         } catch (Exception e) {
             e.printStackTrace();
             //出现异常，则告诉页面失败
-            mp.addAttribute("result_file", "上传失败");
+            mp.addAttribute("result_file", "上传失败！请检查文件是否存在或者检测参数是否正确！");
+        } finally {
+            // 会在本地产生临时文件，用完后需要删除
+            if (toFile.exists()) {
+                toFile.delete();
+            }
         }
 
         return "/detect";
