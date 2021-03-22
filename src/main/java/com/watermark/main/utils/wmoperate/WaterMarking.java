@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WaterMarking {
+    //todo:验证查询结果：均值，总和是否相同
     //嵌入算法
     public Dataset Embed(String K, Double M, Dataset dataset, Integer markedLine) {
         ArrayList<Integer> skey = new ArrayList<>();

@@ -7,6 +7,7 @@ import com.watermark.main.repository.DataSourceRepository;
 import com.watermark.main.testfunction.Add;
 import com.watermark.main.utils.ReadFile;
 import com.watermark.main.utils.WriteFile;
+import com.watermark.main.utils.wmoperate.JudgeUtils;
 import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
@@ -42,7 +43,8 @@ public class UserFuncController {
         return  "/user/embed";
     }
     @PostMapping("/embed")
-    public String embed(@RequestParam("file") MultipartFile file, @RequestParam("markedline") String text, ModelMap mp) throws Exception {
+    public String embed(@RequestParam("file") MultipartFile file, @RequestParam("markedline") String ml,
+                        @RequestParam("key") String K, @RequestParam("M") String m, ModelMap mp) throws Exception {
         //判断文件是否为空
         if(file.isEmpty()){
             mp.addAttribute("result_file", "上传失败，请选择合适的文件上传！");
@@ -50,6 +52,10 @@ public class UserFuncController {
         }
         //转换MutipartFile类型为File类型
         File toFile = ReadFile.multipartFileToFile(file);
+        if (ml == null) {
+            mp.addAttribute("result_file", "上传失败，请输入属性列号！！");
+            return "/user/embed";
+        }
 
         //获取上传者用户名
         UserInfo user = (UserInfo) SecurityUtils.getSubject().getPrincipal();
@@ -86,15 +92,17 @@ public class UserFuncController {
 
             //调用嵌入API
             WaterMarking waterMark = new WaterMarking();
-            //todo:K和M的值由用户决定
-            //暂时固定K和M的值
-            String K = "123";
-            Double M = 1000d;
-            Integer markedLine = 10;
-            Dataset embdedDataset = waterMark.Embed(K, M, dataset, markedLine);
+            Double M = Double.parseDouble(m);
+            Integer markedLine = Integer.parseInt(ml) - 1;
+
+            //判断markedLine是否超过最大列，以及所选列是否是数值型
+            JudgeUtils judgeUtils = new JudgeUtils();
+            judgeUtils.JudgeMarkedLine(dataset, markedLine);
+
+            Dataset embedDataset = waterMark.Embed(K, M, dataset, markedLine);
 
             //转换dataset类型为String并写入到服务器指定，路径
-            WriteFile.WriteTable(embdedDataset, targetFile);
+            WriteFile.WriteTable(embedDataset, targetFile);
 
             //todo:可能需要修改文件信息数据库的结构，添加K， M，markedLine属性
             //将文件信息保存到数据库
@@ -112,6 +120,9 @@ public class UserFuncController {
             e.printStackTrace();
             //出现异常，则告诉页面失败
             mp.addAttribute("result_file", "上传失败");
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            mp.addAttribute("result_file", "没有该列或者该列属性类型不是数值型！");
         } finally {
             // 会在本地产生临时文件，用完后需要删除
             if (toFile.exists()) {
@@ -119,9 +130,6 @@ public class UserFuncController {
             }
         }
 
-        Add a = new Add();
-        Integer res = a.add(1,2);
-        mp.addAttribute("res", res);
         return  "/user/embed";
     }
 
