@@ -3,8 +3,9 @@ package com.watermark.main.controller;
 import com.watermark.main.DPWA.Dataset;
 import com.watermark.main.entity.DataSource;
 import com.watermark.main.entity.UserInfo;
+import com.watermark.main.entity.WaterMarkKey;
 import com.watermark.main.repository.DataSourceRepository;
-import com.watermark.main.testfunction.Add;
+import com.watermark.main.repository.WaterMarkKeyRepository;
 import com.watermark.main.utils.ReadFile;
 import com.watermark.main.utils.WriteFile;
 import com.watermark.main.utils.wmoperate.JudgeUtils;
@@ -13,7 +14,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,9 +29,12 @@ import java.util.Date;
 public class UserFuncController {
     final
     DataSourceRepository dataSourceRepository;
+    final
+    WaterMarkKeyRepository waterMarkKeyRepository;
 
-    public UserFuncController(DataSourceRepository dataSourceRepository) {
+    public UserFuncController(DataSourceRepository dataSourceRepository, WaterMarkKeyRepository waterMarkKeyRepository) {
         this.dataSourceRepository = dataSourceRepository;
+        this.waterMarkKeyRepository = waterMarkKeyRepository;
     }
 
     /**
@@ -113,6 +116,13 @@ public class UserFuncController {
             dataSource.setUploadTime(date);
             dataSource.setUser(user);
             dataSourceRepository.save(dataSource);
+
+            //todo:保存密钥K,M,markedLine到数据库
+            WaterMarkKey waterMarkKey = new WaterMarkKey();
+            waterMarkKey.setKey(K);
+            waterMarkKey.setUser(user);
+            waterMarkKey.setFile(dataSource);
+            waterMarkKeyRepository.save(waterMarkKey);
 
             //告诉页面上传成功了
             mp.addAttribute("result_file", "上传成功");
