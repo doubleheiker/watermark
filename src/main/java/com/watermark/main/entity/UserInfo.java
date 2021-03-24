@@ -15,7 +15,7 @@ import java.util.List;
 public class UserInfo implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;//用户id
 
     @Column(unique = true)

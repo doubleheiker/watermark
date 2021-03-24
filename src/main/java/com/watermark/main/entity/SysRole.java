@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SysRole {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rid;
 
     private String role;// 角色标识程序中判断使用,如"admin",这个是唯一的

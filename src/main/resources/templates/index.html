@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="UTF-8">
-    <title>数据库水印系统</title>
+<head th:include="header::header">
 </head>
 <body>
 <hr>
@@ -36,6 +34,9 @@
         <span>embed</span>
     </a>
     |
+    <a th:href="@{/user/keymanager}">
+        <span>keyManager</span>
+    </a>
 </div>
 
 <div shiro:hasRole="admin">

@@ -12,9 +12,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class WaterMarkKey {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long kid;
     private String key;
+    private Double M;
+    private Integer markedLine;
 
     //水印密钥 - 文件fid 一对一
     @OneToOne(fetch = FetchType.LAZY)

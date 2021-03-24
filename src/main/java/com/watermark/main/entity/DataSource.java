@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class DataSource {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fid;
     private String hashName;//文件名
     private String originFileName;//文件原名

@@ -15,7 +15,7 @@ import java.util.List;
 public class SysPermission implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pid;//主键.
     private String name;//名称.
     //@Column(columnDefinition="enum('menu','button')")

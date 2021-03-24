@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:include="header::header">
+</head>
+<body class="container">
+
+<br/>
+<h1>水印密钥列表</h1>
+<br/><br/>
+<div class="with:80%">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Key</th>
+            <th>M</th>
+            <th>Marked Line</th>
+            <th>FileName</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--each来进行for循环求值-->
+        <tr  th:each="watermarkKey : ${waterMarkKeyList}">
+            <th scope="row" th:text="${watermarkKey.getKid()}">kid</th>
+            <td th:text="${watermarkKey.getKey()}">key</td>
+            <td th:text="${watermarkKey.getM()}">M</td>
+            <td th:text="${watermarkKey.getMarkedLine()}">L</td>
+            <td th:text="${watermarkKey.getFile().getOriginFileName()}">fName</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="form-group">
+    <div class="col-sm-2 control-label">
+        <a class="btn btn-info">add</a>
+    </div>
+</div>
+
+</body>
+</html>

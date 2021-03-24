@@ -6,6 +6,7 @@ import com.watermark.main.entity.UserInfo;
 import com.watermark.main.entity.WaterMarkKey;
 import com.watermark.main.repository.DataSourceRepository;
 import com.watermark.main.repository.WaterMarkKeyRepository;
+import com.watermark.main.service.WaterMarkKeyService;
 import com.watermark.main.utils.ReadFile;
 import com.watermark.main.utils.WriteFile;
 import com.watermark.main.utils.wmoperate.JudgeUtils;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -31,15 +33,18 @@ public class UserFuncController {
     DataSourceRepository dataSourceRepository;
     final
     WaterMarkKeyRepository waterMarkKeyRepository;
+    final
+    WaterMarkKeyService waterMarkKeyService;
 
-    public UserFuncController(DataSourceRepository dataSourceRepository, WaterMarkKeyRepository waterMarkKeyRepository) {
+    public UserFuncController(DataSourceRepository dataSourceRepository, WaterMarkKeyRepository waterMarkKeyRepository, WaterMarkKeyService waterMarkKeyService) {
         this.dataSourceRepository = dataSourceRepository;
         this.waterMarkKeyRepository = waterMarkKeyRepository;
+        this.waterMarkKeyService = waterMarkKeyService;
     }
 
     /**
      * 水印嵌入.
-     * @return
+     * @return /user/embed
      */
     @GetMapping("/toEmbed")
     public String toEmbed() {
@@ -107,7 +112,6 @@ public class UserFuncController {
             //转换dataset类型为String并写入到服务器指定，路径
             WriteFile.WriteTable(embedDataset, targetFile);
 
-            //todo:可能需要修改文件信息数据库的结构，添加K， M，markedLine属性
             //将文件信息保存到数据库
             DataSource dataSource = new DataSource();
             dataSource.setHashName(hashName.toString());
@@ -117,9 +121,11 @@ public class UserFuncController {
             dataSource.setUser(user);
             dataSourceRepository.save(dataSource);
 
-            //todo:保存密钥K,M,markedLine到数据库
+            //保存密钥K,M,markedLine到数据库
             WaterMarkKey waterMarkKey = new WaterMarkKey();
             waterMarkKey.setKey(K);
+            waterMarkKey.setM(M);
+            waterMarkKey.setMarkedLine(markedLine);
             waterMarkKey.setUser(user);
             waterMarkKey.setFile(dataSource);
             waterMarkKeyRepository.save(waterMarkKey);
@@ -143,5 +149,18 @@ public class UserFuncController {
         return  "/user/embed";
     }
 
+    /**
+     * 水印密钥管理.
+     * @return /user/keymanager
+     */
+    @RequestMapping("/keymanager")
+    public String keyManager(ModelMap mp) {
+        //获取上传者用户名
+        UserInfo user = (UserInfo) SecurityUtils.getSubject().getPrincipal();
+        List<WaterMarkKey> waterMarkKeyList = waterMarkKeyService.getUserKey(user);
+        System.out.println(waterMarkKeyList.get(0).getMarkedLine());
+        mp.addAttribute("waterMarkKeyList", waterMarkKeyList);
+        return "/user/keymanager";
+    }
 
 }
