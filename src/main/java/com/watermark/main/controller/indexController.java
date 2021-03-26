@@ -1,23 +1,33 @@
 package com.watermark.main.controller;
 
 import com.watermark.main.DPWA.Dataset;
+import com.watermark.main.entity.DataSource;
 import com.watermark.main.entity.UserInfo;
+import com.watermark.main.repository.DataSourceRepository;
 import com.watermark.main.repository.UserInfoRepository;
+import com.watermark.main.service.DataSourceService;
 import com.watermark.main.service.UserInfoServiceImpl;
+import com.watermark.main.utils.DownloadFile;
 import com.watermark.main.utils.ReadFile;
 import com.watermark.main.utils.wmoperate.JudgeUtils;
 import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 
 @Controller
@@ -26,10 +36,16 @@ public class indexController {
     UserInfoServiceImpl userInfoServiceImpl;
     final
     UserInfoRepository userInfoRepository;
+    final
+    DataSourceService dataSourceService;
+    final
+    DataSourceRepository dataSourceRepository;
 
-    public indexController(UserInfoServiceImpl userInfoServiceImpl, UserInfoRepository userInfoRepository) {
+    public indexController(UserInfoServiceImpl userInfoServiceImpl, UserInfoRepository userInfoRepository, DataSourceService dataSourceService, DataSourceRepository dataSourceRepository) {
         this.userInfoServiceImpl = userInfoServiceImpl;
         this.userInfoRepository = userInfoRepository;
+        this.dataSourceService = dataSourceService;
+        this.dataSourceRepository = dataSourceRepository;
     }
 
     @GetMapping("/")
@@ -37,9 +53,39 @@ public class indexController {
         return "index";
     }
 
-    @GetMapping("/toSearch")
-    public String toSearch() {
+//    @GetMapping("/toSearch")
+//    public String toSearch() {
+//        return "search";
+//    }
+    @RequestMapping("/toSearch")
+    public String search(ModelMap mp, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "4") int pageSize) {
+        Page<DataSource> fileList = dataSourceService.getFileList(pageNum, pageSize);
+        mp.addAttribute("fileList", fileList);
         return "search";
+    }
+    @RequestMapping("/fileDownload")
+    @ResponseBody
+    public String fileDownload(Long id) throws UnsupportedEncodingException {
+        String filepath = dataSourceRepository.findByFid(id).getUrl();
+        String filename = dataSourceRepository.findByFid(id).getHashName();
+        File file = new File(filepath);
+
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            return "无效请求！";
+        }
+        HttpServletResponse response = requestAttributes.getResponse();
+        if (response == null) {
+            return "无效请求！";
+        }
+
+        response.setContentType("text/plain;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        // response.setContentType("application/force-download");
+        response.setHeader("Content-Disposition", "attachment;fileName=" +   java.net.URLEncoder.encode(filename,"UTF-8"));
+        DownloadFile.download(response, file);
+
+        return null;
     }
 
     @GetMapping("/toDetect")
@@ -117,7 +163,7 @@ public class indexController {
             try {
                 //登录，进行密码比对，登录失败时将会抛出对应异常
                 currentUser.login(usernamePasswordToken);
-                return "index";
+                return "redirect:/";
             } catch (UnknownAccountException uae) {
                 model.addAttribute("msg", "用户名不存在");
                 return "login";

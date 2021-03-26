@@ -13,6 +13,7 @@ import com.watermark.main.utils.wmoperate.JudgeUtils;
 import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Controller
@@ -113,22 +115,11 @@ public class UserFuncController {
             WriteFile.WriteTable(embedDataset, targetFile);
 
             //将文件信息保存到数据库
-            DataSource dataSource = new DataSource();
-            dataSource.setHashName(hashName.toString());
-            dataSource.setOriginFileName(originalFilename);
-            dataSource.setUrl(path + hashName.toString());
-            dataSource.setUploadTime(date);
-            dataSource.setUser(user);
-            dataSourceRepository.save(dataSource);
+            //todo:为了查询下载提供密钥，还需要保存密钥信息到datasource数据库
+            DataSource dataSource = this.saveDataSourceFile(hashName.toString(),originalFilename,path + hashName.toString(),date,user);
 
             //保存密钥K,M,markedLine到数据库
-            WaterMarkKey waterMarkKey = new WaterMarkKey();
-            waterMarkKey.setKey(K);
-            waterMarkKey.setM(M);
-            waterMarkKey.setMarkedLine(markedLine);
-            waterMarkKey.setUser(user);
-            waterMarkKey.setFile(dataSource);
-            waterMarkKeyRepository.save(waterMarkKey);
+            this.saveKeyInfo(K,M,markedLine,user,dataSource);
 
             //告诉页面上传成功了
             mp.addAttribute("result_file", "上传成功");
@@ -150,17 +141,50 @@ public class UserFuncController {
     }
 
     /**
-     * 水印密钥管理.
+     * 水印密钥管理-列出当前用户的水印密钥.
      * @return /user/keymanager
      */
     @RequestMapping("/keymanager")
-    public String keyManager(ModelMap mp) {
+    public String keyManager(ModelMap mp, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "4") int pageSize) {
         //获取上传者用户名
         UserInfo user = (UserInfo) SecurityUtils.getSubject().getPrincipal();
-        List<WaterMarkKey> waterMarkKeyList = waterMarkKeyService.getUserKey(user);
-        System.out.println(waterMarkKeyList.get(0).getMarkedLine());
+        Page<WaterMarkKey> waterMarkKeyList = waterMarkKeyService.getUserKeyList(user, pageNum, pageSize);
         mp.addAttribute("waterMarkKeyList", waterMarkKeyList);
         return "/user/keymanager";
     }
 
+    /**
+     * 水印密钥管理-由用户删除不想存储的密钥.
+     * @return /user/keymanager
+     */
+    @RequestMapping("/delete")
+    public String deleteKey(Long id) {
+        //System.out.println(id);
+        waterMarkKeyService.delete(id);
+        return "redirect:/user/keymanager";
+    }
+
+    //将文件信息保存到数据库
+    private DataSource saveDataSourceFile(String HashName, String OriginFileName,
+                                    String Url, String UploadTime, UserInfo User) {
+        DataSource dataSource = new DataSource();
+        dataSource.setHashName(HashName);
+        dataSource.setOriginFileName(OriginFileName);
+        dataSource.setUrl(Url);
+        dataSource.setUploadTime(UploadTime);
+        dataSource.setUser(User);
+        dataSourceRepository.save(dataSource);
+        return dataSource;
+    }
+
+    //将用户使用的密钥K,M,markedLine保存到数据库
+    private void saveKeyInfo(String K, Double M, Integer markedLine, UserInfo user, DataSource dataSource) {
+        WaterMarkKey waterMarkKey = new WaterMarkKey();
+        waterMarkKey.setKey(K);
+        waterMarkKey.setM(M);
+        waterMarkKey.setMarkedLine(markedLine);
+        waterMarkKey.setUser(user);
+        waterMarkKey.setFile(dataSource);
+        waterMarkKeyRepository.save(waterMarkKey);
+    }
 }
