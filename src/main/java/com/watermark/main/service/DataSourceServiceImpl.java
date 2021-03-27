@@ -26,4 +26,12 @@ public class DataSourceServiceImpl implements DataSourceService{
         Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
         return dataSourceRepository.findAll(pageable);
     }
+
+    @Override
+    public Page<DataSource> findByOriginFileName(String name, int pageNum, int pageSize) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "data_source.upload_time");
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        return dataSourceRepository.findByOriginFileName(name, pageable);
+    }
+
 }

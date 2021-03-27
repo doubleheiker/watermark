@@ -2,6 +2,7 @@ package com.watermark.main.utils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class DownloadFile {
     public static void download(HttpServletResponse response, File file) {
@@ -28,6 +29,17 @@ public class DownloadFile {
             bis.close();
             fis.close();
         } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public static void downloadCheckFile(HttpServletResponse response, String checkStr) {
+        OutputStream os = null; //输出流
+        try {
+            os = response.getOutputStream();
+            os.write(checkStr.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

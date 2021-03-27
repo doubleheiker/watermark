@@ -18,6 +18,10 @@ public class DataSource {
     private String originFileName;//文件原名
     private String url;//资源路径
     private String uploadTime;//上传时间
+    //三个检测参数
+    private String K;
+    private Double M;
+    private Integer L;
 
     //数据库文件与上传者是多对一的关系
     @ManyToOne(fetch = FetchType.LAZY)

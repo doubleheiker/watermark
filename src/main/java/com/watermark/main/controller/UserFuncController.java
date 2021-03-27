@@ -115,8 +115,9 @@ public class UserFuncController {
             WriteFile.WriteTable(embedDataset, targetFile);
 
             //将文件信息保存到数据库
-            //todo:为了查询下载提供密钥，还需要保存密钥信息到datasource数据库
-            DataSource dataSource = this.saveDataSourceFile(hashName.toString(),originalFilename,path + hashName.toString(),date,user);
+            //为了查询下载提供密钥，还需要保存密钥信息到datasource数据库
+            DataSource dataSource = this.saveDataSourceFile(hashName.toString(),originalFilename,
+                    path + hashName.toString(),date,user,K,M,markedLine);
 
             //保存密钥K,M,markedLine到数据库
             this.saveKeyInfo(K,M,markedLine,user,dataSource);
@@ -166,13 +167,16 @@ public class UserFuncController {
 
     //将文件信息保存到数据库
     private DataSource saveDataSourceFile(String HashName, String OriginFileName,
-                                    String Url, String UploadTime, UserInfo User) {
+                                    String Url, String UploadTime, UserInfo User, String K, Double M, Integer L) {
         DataSource dataSource = new DataSource();
         dataSource.setHashName(HashName);
         dataSource.setOriginFileName(OriginFileName);
         dataSource.setUrl(Url);
         dataSource.setUploadTime(UploadTime);
         dataSource.setUser(User);
+        dataSource.setK(K);
+        dataSource.setM(M);
+        dataSource.setL(L);
         dataSourceRepository.save(dataSource);
         return dataSource;
     }

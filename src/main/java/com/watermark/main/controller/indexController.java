@@ -14,6 +14,7 @@ import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -58,11 +60,26 @@ public class indexController {
 //        return "search";
 //    }
     @RequestMapping("/toSearch")
-    public String search(ModelMap mp, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "4") int pageSize) {
-        Page<DataSource> fileList = dataSourceService.getFileList(pageNum, pageSize);
-        mp.addAttribute("fileList", fileList);
-        return "search";
+    public String toSearch(ModelMap mp, HttpServletRequest request, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "4") int pageSize) {
+        if (request.getParameter("name") == null) {
+            Page<DataSource> fileList = dataSourceService.getFileList(pageNum, pageSize);
+            mp.addAttribute("fileList", fileList);
+            return "search";
+        } else {
+            String name = request.getParameter("name");
+            Page<DataSource> res = dataSourceService.findByOriginFileName(name, pageNum, pageSize);
+            mp.addAttribute("fileList", res);
+            return "search";
+        }
     }
+//    @PostMapping("/search")
+//    public String search(ModelMap mp, HttpServletRequest request, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "4") int pageSize) {
+//        String name = request.getParameter("name");
+//        Page<DataSource> res = dataSourceService.findByOriginFileName(name, pageNum, pageSize);
+//        mp.addAttribute("search_result", res);
+//        return "redirect:search";
+//    }
+
     @RequestMapping("/fileDownload")
     @ResponseBody
     public String fileDownload(Long id) throws UnsupportedEncodingException {
@@ -85,6 +102,33 @@ public class indexController {
         response.setHeader("Content-Disposition", "attachment;fileName=" +   java.net.URLEncoder.encode(filename,"UTF-8"));
         DownloadFile.download(response, file);
 
+        return null;
+    }
+    @RequestMapping("/checkFileDownload")
+    @ResponseBody
+    public String checkFileDownload(Long id) throws UnsupportedEncodingException {
+        String filename = "checkFile";
+        String Key = dataSourceRepository.findByFid(id).getK();
+        Double M = dataSourceRepository.findByFid(id).getM();
+        Integer L = dataSourceRepository.findByFid(id).getL();
+        String checkStr = "KEY: " + Key + " M: " + M + " L: " + L;
+
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            return "无效请求！";
+        }
+        HttpServletResponse response = requestAttributes.getResponse();
+        if (response == null) {
+            return "无效请求！";
+        }
+
+        response.setContentType("text/plain;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        // response.setContentType("application/force-download");
+        response.setHeader("Content-Disposition", "attachment;fileName=" +   java.net.URLEncoder.encode(filename,"UTF-8"));
+
+        //从数据库中读取K M L
+        DownloadFile.downloadCheckFile(response, checkStr);
         return null;
     }
 
