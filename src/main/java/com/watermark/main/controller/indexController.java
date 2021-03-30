@@ -6,6 +6,7 @@ import com.watermark.main.entity.UserInfo;
 import com.watermark.main.repository.DataSourceRepository;
 import com.watermark.main.repository.UserInfoRepository;
 import com.watermark.main.service.DataSourceService;
+import com.watermark.main.service.LogInfoService;
 import com.watermark.main.service.UserInfoServiceImpl;
 import com.watermark.main.utils.DownloadFile;
 import com.watermark.main.utils.ReadFile;
@@ -14,7 +15,6 @@ import com.watermark.main.utils.wmoperate.WaterMarking;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,11 +24,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 
@@ -42,12 +40,15 @@ public class indexController {
     DataSourceService dataSourceService;
     final
     DataSourceRepository dataSourceRepository;
+    final
+    LogInfoService logInfoService;
 
-    public indexController(UserInfoServiceImpl userInfoServiceImpl, UserInfoRepository userInfoRepository, DataSourceService dataSourceService, DataSourceRepository dataSourceRepository) {
+    public indexController(UserInfoServiceImpl userInfoServiceImpl, UserInfoRepository userInfoRepository, DataSourceService dataSourceService, DataSourceRepository dataSourceRepository, LogInfoService logInfoService) {
         this.userInfoServiceImpl = userInfoServiceImpl;
         this.userInfoRepository = userInfoRepository;
         this.dataSourceService = dataSourceService;
         this.dataSourceRepository = dataSourceRepository;
+        this.logInfoService = logInfoService;
     }
 
     @GetMapping("/")
@@ -64,11 +65,13 @@ public class indexController {
         if (request.getParameter("name") == null) {
             Page<DataSource> fileList = dataSourceService.getFileList(pageNum, pageSize);
             mp.addAttribute("fileList", fileList);
+            logInfoService.save("浏览搜索页面", 1, 1);
             return "search";
         } else {
             String name = request.getParameter("name");
             Page<DataSource> res = dataSourceService.findByOriginFileName(name, pageNum, pageSize);
             mp.addAttribute("fileList", res);
+            logInfoService.save("查询发布的数据库文件",1,2);
             return "search";
         }
     }
@@ -89,10 +92,12 @@ public class indexController {
 
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
+            logInfoService.save("下载操作失败", 0, 3);
             return "无效请求！";
         }
         HttpServletResponse response = requestAttributes.getResponse();
         if (response == null) {
+            logInfoService.save("下载操作失败", 0, 3);
             return "无效请求！";
         }
 
@@ -101,7 +106,7 @@ public class indexController {
         // response.setContentType("application/force-download");
         response.setHeader("Content-Disposition", "attachment;fileName=" +   java.net.URLEncoder.encode(filename,"UTF-8"));
         DownloadFile.download(response, file);
-
+        logInfoService.save("下载数据库文件", 1, 0);
         return null;
     }
     @RequestMapping("/checkFileDownload")
@@ -115,10 +120,12 @@ public class indexController {
 
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
+            logInfoService.save("下载操作失败", 0, 3);
             return "无效请求！";
         }
         HttpServletResponse response = requestAttributes.getResponse();
         if (response == null) {
+            logInfoService.save("下载操作失败", 0, 3);
             return "无效请求！";
         }
 
@@ -129,6 +136,7 @@ public class indexController {
 
         //从数据库中读取K M L
         DownloadFile.downloadCheckFile(response, checkStr);
+        logInfoService.save("下载水印检测文件", 1, 0);
         return null;
     }
 
@@ -142,11 +150,13 @@ public class indexController {
         //判断文件是否为空
         if(file.isEmpty()){
             mp.addAttribute("result_file", "上传失败，请选择合适的文件上传！");
+            logInfoService.save("上传空文件，失败", 0, 3);
             return "/detect";
         }
         File toFile = ReadFile.multipartFileToFile(file);
         if (ml == null) {
             mp.addAttribute("result_file", "上传失败，请输入正确的参数L！！");
+            logInfoService.save("L参数错误", 0, 3);
             return "/detect";
         }
 
@@ -176,10 +186,12 @@ public class indexController {
 
             mp.addAttribute("result_file", "上传成功");
             mp.addAttribute("detectResult", res);
+            logInfoService.save("水印检测成功", 1, 0);
         } catch (Exception e) {
             e.printStackTrace();
             //出现异常，则告诉页面失败
             mp.addAttribute("result_file", "上传失败！请检查文件是否存在或者检测参数是否正确！");
+            logInfoService.save("水印检测失败", 0, 3);
         } finally {
             // 会在本地产生临时文件，用完后需要删除
             if (toFile.exists()) {
@@ -207,6 +219,7 @@ public class indexController {
             try {
                 //登录，进行密码比对，登录失败时将会抛出对应异常
                 currentUser.login(usernamePasswordToken);
+                logInfoService.save("用户登录", 1, 0);
                 return "redirect:/";
             } catch (UnknownAccountException uae) {
                 model.addAttribute("msg", "用户名不存在");
@@ -233,6 +246,7 @@ public class indexController {
     }
     @RequestMapping(value = "/register")
     public String register(String username, String password, Model model){
+        logInfoService.save("用户注册", 1, 0);
         UserInfo registerUser = userInfoServiceImpl.register(username, password);
         if (registerUser == null) {
             model.addAttribute("msg", "该用户名已存在！");
@@ -246,6 +260,7 @@ public class indexController {
     @GetMapping("/unauthorized")
     @ResponseBody
     public String unauthorizedUrl() {
+        logInfoService.save("非授权访问", 0, 3);
         return "非授权访问！";
     }
 }

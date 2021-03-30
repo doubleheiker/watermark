@@ -20,7 +20,6 @@ public class DownloadFile {
                 os.write(buffer, 0, i);
                 i = bis.read(buffer);
             }
-
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

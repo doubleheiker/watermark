@@ -6,6 +6,7 @@ import com.watermark.main.entity.UserInfo;
 import com.watermark.main.entity.WaterMarkKey;
 import com.watermark.main.repository.DataSourceRepository;
 import com.watermark.main.repository.WaterMarkKeyRepository;
+import com.watermark.main.service.LogInfoService;
 import com.watermark.main.service.WaterMarkKeyService;
 import com.watermark.main.utils.ReadFile;
 import com.watermark.main.utils.WriteFile;
@@ -25,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -37,11 +36,14 @@ public class UserFuncController {
     WaterMarkKeyRepository waterMarkKeyRepository;
     final
     WaterMarkKeyService waterMarkKeyService;
+    final
+    LogInfoService logInfoService;
 
-    public UserFuncController(DataSourceRepository dataSourceRepository, WaterMarkKeyRepository waterMarkKeyRepository, WaterMarkKeyService waterMarkKeyService) {
+    public UserFuncController(DataSourceRepository dataSourceRepository, WaterMarkKeyRepository waterMarkKeyRepository, WaterMarkKeyService waterMarkKeyService, LogInfoService logInfoService) {
         this.dataSourceRepository = dataSourceRepository;
         this.waterMarkKeyRepository = waterMarkKeyRepository;
         this.waterMarkKeyService = waterMarkKeyService;
+        this.logInfoService = logInfoService;
     }
 
     /**
@@ -58,12 +60,14 @@ public class UserFuncController {
         //判断文件是否为空
         if(file.isEmpty()){
             mp.addAttribute("result_file", "上传失败，请选择合适的文件上传！");
+            logInfoService.save("上传空文件，失败", 0, 3);
             return "/user/embed";
         }
         //转换MutipartFile类型为File类型
         File toFile = ReadFile.multipartFileToFile(file);
         if (ml == null) {
             mp.addAttribute("result_file", "上传失败，请输入属性列号！！");
+            logInfoService.save("未输入属性列号", 0, 3);
             return "/user/embed";
         }
 
@@ -124,13 +128,16 @@ public class UserFuncController {
 
             //告诉页面上传成功了
             mp.addAttribute("result_file", "上传成功");
+            logInfoService.save("上传文件并嵌入水印", 1, 0);
         } catch (IOException e) {
             e.printStackTrace();
             //出现异常，则告诉页面失败
             mp.addAttribute("result_file", "上传失败");
+            logInfoService.save("上传文件失败", 0, 3);
         } catch (Exception e1) {
             e1.printStackTrace();
             mp.addAttribute("result_file", "没有该列或者该列属性类型不是数值型！");
+            logInfoService.save("属性列不符合规定", 0, 3);
         } finally {
             // 会在本地产生临时文件，用完后需要删除
             if (toFile.exists()) {
@@ -151,6 +158,7 @@ public class UserFuncController {
         UserInfo user = (UserInfo) SecurityUtils.getSubject().getPrincipal();
         Page<WaterMarkKey> waterMarkKeyList = waterMarkKeyService.getUserKeyList(user, pageNum, pageSize);
         mp.addAttribute("waterMarkKeyList", waterMarkKeyList);
+        logInfoService.save("浏览密钥管理界面", 1, 1);
         return "/user/keymanager";
     }
 
@@ -162,6 +170,7 @@ public class UserFuncController {
     public String deleteKey(Long id) {
         //System.out.println(id);
         waterMarkKeyService.delete(id);
+        logInfoService.save("删除密钥",1,0);
         return "redirect:/user/keymanager";
     }
 
