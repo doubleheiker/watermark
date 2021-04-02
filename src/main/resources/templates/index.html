@@ -40,16 +40,8 @@
 </div>
 
 <div shiro:hasRole="admin">
-    <a th:href="@{/admin/userInfo}">
-        <span>查询用户</span>
-    </a>
-    |
-    <a th:href="@{/admin/userInfoAdd}">
-        <span>添加用户</span>
-    </a>
-    |
-    <a th:href="@{/admin/userInfoDel}">
-        <span>删除用户</span>
+    <a th:href="@{/admin/userAdmin}">
+        <span>用户管理</span>
     </a>
     |
     <a th:href="@{/admin/logAdmin}">

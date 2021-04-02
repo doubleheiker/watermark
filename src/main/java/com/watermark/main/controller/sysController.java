@@ -1,8 +1,10 @@
 package com.watermark.main.controller;
 
 import com.watermark.main.entity.LogInfo;
+import com.watermark.main.entity.UserInfo;
 import com.watermark.main.service.LogInfoService;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.watermark.main.service.UserInfoService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,49 +12,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Controller
 @RequestMapping("/admin")
 public class sysController {
     final
     LogInfoService logInfoService;
+    final
+    UserInfoService userInfoService;
 
-    public sysController(LogInfoService logInfoService) {
+    public sysController(LogInfoService logInfoService, UserInfoService userInfoService) {
         this.logInfoService = logInfoService;
+        this.userInfoService = userInfoService;
     }
 
     /**
-     * 用户查询.
+     * 用户管理.
      * @return
      */
-    @RequestMapping("/userInfo")
-    @RequiresPermissions("userInfo:view")//权限管理;
-    public String userInfo(){
-        return "/admin/userInfo";
-    }
+    @RequestMapping("/userAdmin")
+    public String userInfo(ModelMap mp,
+                           @RequestParam(value = "pageNum", defaultValue = "0") int pageNum,
+                           @RequestParam(value = "pageSize", defaultValue = "12") int pageSize){
+        UserInfo account = (UserInfo) SecurityUtils.getSubject().getPrincipal();
 
-    /**
-     * 用户添加;
-     * @return
-     */
-    @RequestMapping("/userInfoAdd")
-    @RequiresPermissions("userInfo:add")//权限管理;
-    public String userInfoAdd(){
-        return "/admin/userInfoAdd";
-    }
+        mp.addAttribute("lists", userInfoService.findAll(pageNum, pageSize));
+        mp.addAttribute("username", account.getUsername());
 
-    /**
-     * 用户删除;
-     * @return
-     */
-    @RequestMapping("/userInfoDel")
-    @RequiresPermissions("userInfo:del")//权限管理;
-    public String userDel(){
-        return "/admin/userInfoDel";
+        return "/admin/userAdmin";
     }
 
     /**

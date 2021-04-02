@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:include="header::header">
+<body>
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="row">
+            <div class="col-sm-12">
+                <button id="addUserBtn" class="btn btn-block" data-toggle="modal" data-target="#myModaladd">
+                    <i class="ace-icon fa fa-check"></i>添加管理员用户
+                </button>
+            </div>
+            <br/>
+            <div class="col-sm-12">
+                <div class="space-4"></div>
+                <div class="space-4"></div>
+                <div class="space-4"></div>
+                <div class="with:80%">
+                    <table id="simple-table" class="table  table-bordered table-hover" style="width:100%;word-break: break-all;">
+                        <thead>
+                        <tr>
+                            <th hidden="hidden">序号</th>
+                            <th>用户名</th>
+                            <th>角色</th>
+                            <th>管理</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!--each来进行for循环求值-->
+                        <tr  th:each="iter : ${lists}">
+                            <td hidden="hidden" th:text="${iter.getUid()}">1</td>
+                            <td th:text="${iter.getUsername()}">用户名</td>
+                            <td th:text="${iter.getRoleList().get(0).getDescription()}">角色</td>
+                            <td >
+                                <div class="btn-group">
+                                    <button class="btn btn-xs btn-danger delbtn" data-toggle="modal"
+                                            data-target="#myModal2">
+                                        <i class="ace-icon fa fa-trash-o bigger-120"></i> 删除
+                                    </button>
+                                    <button class="btn btn-xs btn-warning resetbtn" data-toggle="modal"
+                                            data-target="#myModal3">
+                                        <i class="ace-icon fa fa-trash-o bigger-120"></i> 重置密码
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- /.main-content -->
+    <!-- Modal -->
+    <div class="modal fade" id="myModaladd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">添加管理员用户</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div id="addform" class="form-group">
+                                <form id="addUserFrom" class="form-horizontal" role="form">
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label no-padding-right" for="addusername"><span class="red">*</span>帐户名：</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" id="addusername" name="username" placeholder="帐户名" class="col-xs-10 col-sm-5">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label no-padding-right" for="addpassword"><span class="red">*</span>密 码：</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" id="addpassword" name="password" placeholder="密 码" class="col-xs-10 col-sm-5">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div id="addhiddenAlert" hidden="hidden" class="col-sm-12 clearfix">
+                                <div class="alert alert-danger">
+                                    <strong>
+                                        <i class="ace-icon fa fa-times"></i>
+                                        警告！！
+                                    </strong>
+                                    请按要求填写所有选项！<span id="addalertmsgspan"></span>
+                                    <br>
+                                </div>
+                            </div>
+                            <div id="addSucAlert" hidden="hidden" class="col-sm-12 clearfix">
+                                <div class="alert alert-success">
+                                    <button type="button" class="close" data-dismiss="alert">
+                                        <i class="ace-icon fa fa-times"></i>
+                                    </button>
+                                    <strong>
+                                        <i class="ace-icon fa fa-times"></i>
+                                        添加成功！
+                                    </strong>
+                                    刷新页面
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <p>&nbsp;&nbsp;1)密码不得与账号相同;账号长度为5到20字符;账号不得存在特殊字符;<br/>
+                                &nbsp;&nbsp;2)密码须8位以上20位以下,包括数字、大小写字母、特殊字符;<br/>
+                                &nbsp;&nbsp;3)所有输入框必须正确填写;<br/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭</button>
+                    <button type="button" id="addbtn" class="btn btn-primary">确定添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel2">删除用户</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" >确定删除用户<span id="delusername"></span>吗？</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="delbtn">确定删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel3">重置密码</h4>
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" >
+                    用户名：<p id="resetname"></p>
+                    重置密码为<span id="resetpassword"></span>吗？
+                    <div id="resetSucAlert" class="col-sm-12 clearfix" hidden="hidden">
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert"></button>
+                            <strong>
+                                重置成功！
+                            </strong>
+                            5秒后刷新页面
+                            <br>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="resetbtn">确定重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+    jQuery(function($) {
+        $addUserBut=$('#addbtn');
+        $addusername=$('#addusername');
+        $addpassword=$('#addpassword');
+        $.get("/net/resetstr",function(data,status){
+            $('#resetpassword').html(data);
+        });
+
+        $('.btn').click(function(){
+            $.get("/net/jumping",function(data,status){
+
+            });
+        });
+
+        //密码重置
+        $('.resetbtn').click(function(){
+            $.get("/net/resetstr",function(data,status){
+                $('#resetpassword').html(data);
+            });
+            var name=$(this).parent().parent().parent().children('td').eq(1).html();
+            $('#resetname').html(name);
+        });
+
+        $('#resetbtn').click(function(){
+            $.post("/net/resetUser",{
+                username:$('#resetname').html(),
+                newpassword:$('#resetpassword').html()
+            },function(data,status){
+                var ret=$.parseJSON(data);
+                if(ret.code==0) {
+                    $('#resetSucAlert').removeAttr('hidden');
+                    window.setTimeout(function(){
+                        window.location.reload();
+                    }, 5000);
+                }
+            });
+        });
+
+        //添加管理员用户
+        $('#addUserBtn').click(function(){
+            if(typeof($('#addhiddenAlert').attr('hidden'))=="undefined") {
+                $('#addhiddenAlert').attr('hidden', 'hidden');
+            }
+            $('#addform input').each(function(){
+                $(this).val("");
+            });
+        });
+
+        $addUserBut.click(function(e){
+            e.preventDefault();
+            var addflag=1;
+            var addalertmsg="";
+            console.log($("#addUserFrom").serialize());
+            $('#addform input').each(function(){
+                if($(this).attr('name')==="password") {
+                    console.log("password");
+                    if(validpassword($(this).val())==0) {
+                        addalertmsg+="密码填写不符合规范！";
+                        addflag=0;
+                    }else if($(this).val().length<8||$(this).val().length>20) {
+                        addalertmsg+="密码长度填写不符合规范！";
+                        addflag=0;
+                    }else if(_isKeyBoardContinuousChar($(this).val())) {
+                        addalertmsg+="密码存在含有键盘排序的字符串！";
+                        addflag=0;
+                    }
+                }
+                if($(this).attr('name')==="username") {
+                    var regStr = /[^A-Za-z0-9]/;
+                    if($(this).val().length>20||$(this).val().length<5||regStr.test($(this).val())) {
+                        addalertmsg+="账户名填写不符合规范！";
+                        addflag=0;
+                    }
+                }
+            });
+            if(addflag===0) {
+                console.log(addalertmsg);
+                $('#addalertmsgspan').html(addalertmsg);
+                $('#addhiddenAlert').removeAttr('hidden');
+            } else {
+                $.get("/net/getUser",{"username":$('#addusername').val()},function(data,status){
+                    var ret=$.parseJSON(data);
+                    if(ret.code==0) {
+                        $('#addalertmsgspan').html("账号已存在！");
+                        $('#addhiddenAlert').removeAttr('hidden');
+                    }else {
+                        $.get("/net/addAdmin",$("#addUserFrom").serialize(),function(data,status){
+                            var ret=$.parseJSON(data);
+                            if(ret.code==0) {
+                                if(typeof($('#addhiddenAlert').attr('hidden'))=="undefined") {
+                                    $('#addhiddenAlert').attr('hidden', 'hidden');
+                                }
+                                $('#addSucAlert').removeAttr('hidden');
+                                window.setTimeout(function(){
+                                    window.location.reload();
+                                }, 500);
+                            }else {
+                                $('#addhiddenAlert').removeAttr('hidden');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        $delbtns=$('.delbtn');
+        $delbtns.on('click',function(e){
+            console.log(1);
+            var name=$(this).parent().parent().parent().children('td').eq(1).html();
+            $('#delusername').html(name);
+        });
+        $('#delbtn').on('click',function(e){
+            $.post("/net/delUser",{
+                username:$('#delusername').html()
+            },function(data,status){
+                window.setTimeout(function(e){
+                    window.location.reload();
+                }, 1000);
+            });
+        });
+
+        function validpassword(password) {
+            var str = password;
+            var regUpper = /[A-Z]/;
+            var regLower = /[a-z]/;
+            var regDig = /[0-9]/;
+            var regStr = /[^A-Za-z0-9]/;
+            var complex = 0;
+            if (regLower.test(str)) {
+                console.log(111);
+                ++complex;
+            }
+            if (regUpper.test(str)) {
+                console.log(222);
+                ++complex;
+            }
+            if (regDig.test(str)) {
+                console.log(333);
+                ++complex;
+            }
+            if (regStr.test(str)) {
+                console.log(444);
+                ++complex;
+            }
+            if (complex < 4) {
+                console.log(555);
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+
+        /**
+         * 键盘连续字符统计3个
+         * @param str
+         * @return
+         */
+        function _isKeyBoardContinuousChar(str) {
+            var c1 = [
+                ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+'],
+                ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '{', '}', '|'],
+                ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ':', '"'],
+                ['z', 'x', 'c', 'v', 'b', 'n', 'm', '<', '>', '?']
+            ];
+            var c2 = [
+                ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
+                ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+                ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\''],
+                ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
+            ];
+            str = str.split("");
+            //获取坐标位置
+            var y = [];
+            var x = [];
+            for (var c = 0; c < str.length; c++) {
+                y[c] = 0;//当做~`键处理
+                x[c] = -1;
+                for (var i = 0; i < c1.length; i++) {
+                    for (var j = 0; j < c1[i].length; j++) {
+                        if (str[c] === c1[i][j]||str[c].toLowerCase() === c1[i][j]) {
+                            y[c] = i;
+                            x[c] = j;
+                        }
+                    }
+                }
+                if (x[c] !== -1) continue;
+                for (var i = 0; i < c2.length; i++) {
+                    for (var j = 0; j < c2[i].length; j++) {
+                        if (str[c] === c2[i][j]||str[c].toLowerCase() === c2[i][j]) {
+                            y[c] = i;
+                            x[c] = j;
+                        }
+                    }
+                }
+            }
+            //匹配坐标连线
+            for (var c = 1; c < str.length - 1; c++) {
+                if (y[c - 1] === y[c] && y[c] === y[c + 1]) {
+                    if ((x[c - 1] + 1 === x[c] && x[c] + 1 === x[c + 1]) || (x[c + 1] + 1 === x[c] && x[c] + 1 === x[c - 1])) {
+                        return true;
+                    }
+                } else if (x[c - 1] === x[c] && x[c] === x[c + 1]) {
+                    if ((y[c - 1] + 1 === y[c] && y[c] + 1 === y[c + 1]) || (y[c + 1] + 1 === y[c] && y[c] + 1 === y[c - 1])) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    });
+</script>
+
+</body>
+</html>

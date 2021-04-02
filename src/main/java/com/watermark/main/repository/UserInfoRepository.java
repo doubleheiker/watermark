@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
 
     UserInfo findByUsername(String username);
-    //Page<UserInfo> findALl(Pageable pageable);
+    Page<UserInfo> findAll(Pageable pageable);
 
     @Override
     UserInfo save(UserInfo userInfo);
