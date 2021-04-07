@@ -2,53 +2,136 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head th:include="header::header">
 </head>
-<body>
-<hr>
-<p th:text="${msg}" style="color:red;"></p>
+<body id="page-top">
+<div id="navbar" th:replace="nav::nav"></div>
+<div id="wrapper">
+    <div id="sidebar" th:replace="sidebar::sidebar"></div>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#"><h4>数据库水印系统</h4></a>
+                </li>
+                <li class="breadcrumb-item active">功能</li>
+            </ol>
+            <!-- Icon Cards-->
+            <div class="row">
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-colorful3 o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-comments"></i>
+                            </div>
+                            <div class="mr-5">数据库查询</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" th:href="@{/toSearch}">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                                <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-colorful4 o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-list"></i>
+                            </div>
+                            <div class="mr-5">水印检测</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" th:href="@{/toDetect}">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                                <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
 
-<h1>首页</h1>
+                <div shiro:hasRole="user" class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-colorful5 o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-shopping-cart"></i>
+                            </div>
+                            <div class="mr-5">水印嵌入</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" th:href="@{/user/toEmbed}">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                                    <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div shiro:hasRole="user" class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-colorful6 o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-life-ring"></i>
+                            </div>
+                            <div class="mr-5">水印密钥管理</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" th:href="@{/user/keymanager}">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                                    <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
 
-<div th:if="${session.loginUser==null}">
-    <a th:href="@{/toLogin}">
-        <span>登录</span>
-    </a>
-    |
-    <a th:href="@{/toRegister}">
-        <span>注册</span>
-    </a>
+                <div shiro:hasRole="admin" class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-colorful5 o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-shopping-cart"></i>
+                            </div>
+                            <div class="mr-5">用户管理</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" th:href="@{/admin/userAdmin}">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                                    <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div shiro:hasRole="admin" class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-colorful6 o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-life-ring"></i>
+                            </div>
+                            <div class="mr-5">系统日志管理</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" th:href="@{/admin/logAdmin}">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                                    <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright © wm 2021</span>
+                </div>
+            </div>
+        </footer>
+    </div>
 </div>
 
-<p th:text="${username}"></p>
-
-<a th:href="@{/toSearch}">
-    <span>search</span>
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
 </a>
-|
-<a th:href="@{/toDetect}">
-    <span>detect</span>
-</a>
-
-<div shiro:hasRole="user">
-    |
-    <a th:href="@{/user/toEmbed}">
-        <span>embed</span>
-    </a>
-    |
-    <a th:href="@{/user/keymanager}">
-        <span>keyManager</span>
-    </a>
-</div>
-
-<div shiro:hasRole="admin">
-    <a th:href="@{/admin/userAdmin}">
-        <span>用户管理</span>
-    </a>
-    |
-    <a th:href="@{/admin/logAdmin}">
-        <span>日志</span>
-    </a>
-</div>
-
 
 </body>
 </html>

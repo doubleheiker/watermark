@@ -2,7 +2,114 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:include="header::header">
 </head>
-<body>
+<body id="page-top">
+<div id="navbar" th:replace="nav::nav"></div>
+<div id="wrapper">
+    <div id="sidebar" th:replace="sidebar::sidebar"></div>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#"><h4>水印嵌入</h4></a>
+                </li>
+                <li class="breadcrumb-item active">嵌入</li>
+            </ol>
+
+            <!--上传检测文件-->
+            <div class="container">
+                <div class="panel panel-primary">
+                    <!-- .panel-heading 面板头信息。 -->
+                    <div class="panel-heading">
+                        <!-- .panel-title 面板标题。 -->
+                        <h3 class="panel-title">请上传需要嵌入水印的数据库文件</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-horizontal" th:action="@{/user/embed}" enctype="multipart/form-data" method="post">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-append"></span>
+                                    <button type="button" class="btn btn-primary">选择数据库文件</button>
+                                    <input class="form-control" placeholder="请选择文件" type="file" name="file" aria-describedby="basic-addon2">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-append"></span>
+                                    <button type="button" class="btn btn-warning">请选择嵌入水印的数值型属性列号：</button>
+                                    <input class="form-control" placeholder="输入列号" type="text" name="markedline" aria-describedby="basic-addon2">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-append"></span>
+                                    <button type="button" class="btn btn-warning">输入水印密钥：</button>
+                                    <input class="form-control" placeholder="输入密钥" type="text" name="key" aria-describedby="basic-addon2">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-append"></span>
+                                    <button type="button" class="btn btn-warning">输入安全参数：</button>
+                                    <input class="form-control" placeholder="输入安全参数" type="text" name="M" aria-describedby="basic-addon2">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="btn-group btn-group-justified">
+                                    <div class="btn-group" >
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <span class="fas fa-file"></span>&nbsp;嵌入
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="myAlert" class="alert alert-danger" th:if="${not #strings.isEmpty(result_file) and result_file!='嵌入成功'}">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <strong th:text="${result_file}"></strong>
+            </div>
+            <div id="myAlert2" class="alert alert-success" th:if="${not #strings.isEmpty(result_file) and result_file=='嵌入成功'}">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <strong th:text="${result_file}"></strong>
+            </div>
+
+        </div>
+
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright © wm 2021</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<script>
+    $(function(){
+        $(".close").click(function(){
+            $("#myAlert").alert('close');
+            $("#myAlert2").alert('close');
+        });
+    });
+</script>
+
+<!--
 <h1>embed</h1>
 <form class="form-signin" th:action="@{/user/embed}" method="post" enctype="multipart/form-data">
     <p><input type="file" name="file"/></p>
@@ -17,6 +124,7 @@
     <p style="color: red" th:text="${result_file}" th:if="${not #strings.isEmpty(result_file)}"></p>
 </form>
 <p>上传者: <span th:text="${username}"></span></p>
+-->
 
 </body>
 </html>

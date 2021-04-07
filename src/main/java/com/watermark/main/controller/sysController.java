@@ -34,7 +34,7 @@ public class sysController {
     @RequestMapping("/userAdmin")
     public String userInfo(ModelMap mp,
                            @RequestParam(value = "pageNum", defaultValue = "0") int pageNum,
-                           @RequestParam(value = "pageSize", defaultValue = "12") int pageSize){
+                           @RequestParam(value = "pageSize", defaultValue = "6") int pageSize){
         UserInfo account = (UserInfo) SecurityUtils.getSubject().getPrincipal();
 
         mp.addAttribute("lists", userInfoService.findAll(pageNum, pageSize));
@@ -48,7 +48,9 @@ public class sysController {
      * @return /admin/log
      */
     @RequestMapping("/logAdmin")
-    public String logAdmin(ModelMap mp, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "12") int pageSize){
+    public String logAdmin(ModelMap mp,
+                           @RequestParam(value = "pageNum", defaultValue = "0") int pageNum,
+                           @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
         Page<LogInfo> logInfoList = logInfoService.getLogList(pageNum, pageSize);
         mp.addAttribute("logList", logInfoList);
         return "/admin/log";
@@ -60,7 +62,7 @@ public class sysController {
      */
     @RequestMapping("/delete")
     public String deleteKey(Long id) {
-        logInfoService.save("删除单项日志记录",1,0);
+        //logInfoService.save("删除单项日志记录",1,0);
         logInfoService.delete(id);
         return "redirect:/admin/logAdmin";
     }

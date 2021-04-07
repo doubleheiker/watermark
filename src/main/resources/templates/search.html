@@ -1,78 +1,103 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="UTF-8"/>
-    <title>数据库水印系统</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+<head th:include="header::header">
 </head>
-<body class="container">
-<h1>Search</h1>
-<br/>
+<body id="page-top">
+<div id="navbar" th:replace="nav::nav"></div>
+<div id="wrapper">
+    <div id="sidebar" th:replace="sidebar::sidebar"></div>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#"><h4>数据库查询</h4></a>
+                </li>
+                <li class="breadcrumb-item active">搜索</li>
+            </ol>
+            <!--搜索-->
+            <form method="post" class="form-search form-inline" th:action="@{/toSearch}">
+                <div class="input-group">
+                    <input type="text" name="name" class="form-control" placeholder="按文件名称搜索..." aria-label="Search" aria-describedby="basic-addon2">
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-primary">搜&nbsp;&nbsp;索</button>
+                    </div>
+                </div>
+            </form>
 
-<!--搜索-->
-<form method="post" class="form-search form-inline" th:action="@{/toSearch}">
-    <input type="text" name="name" class="form-control" placeholder="Search by name..." aria-label="Search" aria-describedby="basic-addon2">
-    <button type="submit" class="btn btn-primary">搜索</button>
-</form>
-<br/>
+            <br/>
+            <div class="with:80%">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>FileName</th>
+                        <th>UploadTime</th>
+                        <th>UserName</th>
+                        <th>Download</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--each来进行for循环求值-->
+                    <tr  th:each="file : ${fileList}">
+                        <td th:text="${file.getOriginFileName()}">filename</td>
+                        <td th:text="${file.getUploadTime()}">time</td>
+                        <td th:text="${file.getUser().getUsername}">username</td>
+                        <td>
+                            <a th:href="@{/fileDownload(id=${file.getFid()})}" download>File</a>
+                            <br>
+                            <a th:href="@{/checkFileDownload(id=${file.getFid()})}">checkFile</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-<br/>
-<div class="with:80%">
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>FileName</th>
-            <th>UploadTime</th>
-            <th>UserName</th>
-            <th>Download</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!--each来进行for循环求值-->
-        <tr  th:each="file : ${fileList}">
-            <td th:text="${file.getOriginFileName()}">filename</td>
-            <td th:text="${file.getUploadTime()}">time</td>
-            <td th:text="${file.getUser().getUsername}">username</td>
-            <td>
-                <a th:href="@{/fileDownload(id=${file.getFid()})}" download>File</a>
-                <br>
-                <a th:href="@{/checkFileDownload(id=${file.getFid()})}">checkFile</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            <div class="modal-footer no-margin-top">
+                <ul class="pagination pull-right no-margin">
+
+                    <!-- 首页 -->
+                    <li>
+                        <a th:href="'/toSearch?pageNum=0'">首页</a>
+                    </li>
+
+                    <!-- 上一页 -->
+                    <li th:if="${fileList.hasPrevious()}">
+                        <a th:href="'/toSearch?pageNum=' + ${fileList.previousPageable().getPageNumber()}" th:text="上一页"></a>
+                    </li>
+
+                    <!-- 中间页 -->
+                    <li th:each="pageNum:${#numbers.sequence(0, fileList.getTotalPages() - 1)}">
+                        <a th:href="'/toSearch?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum ne fileList.pageable.getPageNumber()}"></a>
+                        <a th:href="'/toSearch?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum eq fileList.pageable.getPageNumber()}" th:style="'font-weight:bold;background: #6faed9;'"></a>
+                    </li>
+
+                    <!-- 下一页 -->
+                    <li th:if="${fileList.hasNext()}">
+                        <a th:href="'/toSearch?pageNum=' + ${fileList.nextPageable().getPageNumber()}" th:text="下一页"></a>
+                    </li>
+
+                    <!-- 尾页 -->
+                    <li>
+                        <a th:href="'/toSearch?pageNum=' + ${fileList.getTotalPages() - 1}">尾页</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright © wm 2021</span>
+                </div>
+            </div>
+        </footer>
+    </div>
 </div>
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
 
-<div class="modal-footer no-margin-top">
-    <ul class="pagination pull-right no-margin">
-
-        <!-- 首页 -->
-        <li>
-            <a th:href="'/toSearch?pageNum=0'">首页</a>
-        </li>
-
-        <!-- 上一页 -->
-        <li th:if="${fileList.hasPrevious()}">
-            <a th:href="'/toSearch?pageNum=' + ${fileList.previousPageable().getPageNumber()}" th:text="上一页"></a>
-        </li>
-
-        <!-- 中间页 -->
-        <li th:each="pageNum:${#numbers.sequence(0, fileList.getTotalPages() - 1)}">
-            <a th:href="'/toSearch?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum ne fileList.pageable.getPageNumber()}"></a>
-            <a th:href="'/toSearch?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum eq fileList.pageable.getPageNumber()}" th:style="'font-weight:bold;background: #6faed9;'"></a>
-        </li>
-
-        <!-- 下一页 -->
-        <li th:if="${fileList.hasNext()}">
-            <a th:href="'/toSearch?pageNum=' + ${fileList.nextPageable().getPageNumber()}" th:text="下一页"></a>
-        </li>
-
-        <!-- 尾页 -->
-        <li>
-            <a th:href="'/toSearch?pageNum=' + ${fileList.getTotalPages() - 1}">尾页</a>
-        </li>
-
-    </ul>
-</div>
 </body>
 </html>

@@ -2,21 +2,133 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:include="header::header">
 </head>
-<body>
-<hr>
-<p th:text="${msg}" style="color:red;"></p>
-<form th:action="@{/register}" method="post">
-    <div class="container">
-        <div>
-            <input id="user_name" name="username" type="text" placeholder="用户名"/>
+<body id="page-top">
+<div id="navbar" th:replace="nav::nav"></div>
+<div id="wrapper">
+    <div id="sidebar" th:replace="sidebar::sidebar"></div>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#"><h4>用户注册界面</h4></a>
+                </li>
+                <li class="breadcrumb-item active">注册</li>
+            </ol>
+            <br>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form th:action="@{/register}" method="post">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">用户名：</label>
+                                <div class="col-sm-10">
+                                    <input id="user_name" type="text" class="form-control" name="username" placeholder="请输入用户名 " required="required"/>
+                                </div>
+                            </div>
+                            <p id="msg_un" style="margin-left: 15px"></p>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">密&nbsp;码：</label>
+                                <div class="col-sm-10">
+                                    <input id="password" type="text" class="form-control" name="password" placeholder="请输密码 " required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">确认密码：</label>
+                                <div class="col-sm-10">
+                                    <input id="i2pwd" type="text" class="form-control" placeholder="请再次输入密码 " required="required"/>
+                                </div>
+                            </div>
+                            <p id="msg_pwd" style="margin-left: 150px"></p>
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                已有账号？点击<a th:href="@{/toLogin}">登录！</a>
+                                <button type="submit" class="btn btn-success" style="float: right" id="btn_register">注册</button>
+                                </div>
+                            </div>
+
+
+                            <!--<div class="container">
+                                <div>
+                                    <input id="user_name" name="username" type="text" placeholder="用户名"/>
+                                </div>
+                                <br />
+                                <div>
+                                    <input id="password" name="password" type="password" placeholder="密码"/>
+                                </div>
+                                <div>
+                                    <span id="basic-addon0">&nbsp;</span>
+                                    <span style="font-size: 14px;color: red" th:text="${msg}" aria-describedby="basic-addon0"></span>
+                                </div>
+                                <br />
+                                <button class="btn btn-primary" type="submit" style="width:190px;">注册</button>
+                            </div>-->
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br />
-        <div>
-            <input id="password" name="password" type="password" placeholder="密码"/>
-        </div>
-        <br />
-        <button class="btn btn-primary" type="submit" style="width:190px;">注册</button>
     </div>
-</form>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<script type="text/javascript">
+    $(document).ready(function (){
+        $('#user_name').on('input propertychange', function () {
+            var username = $.trim($(this).val());
+            if (username==""){
+                $("#msg_un").html("<font color='red'>用户名不能为空</font>");
+            }
+        })
+    })
+
+    $(document).ready(function(){
+        $('#password').on('input propertychange', function() {
+            //input propertychange即实时监控键盘输入包括粘贴
+            var pwd = $.trim($(this).val());
+            //获取this，即ipwd的val()值，trim函数的作用是去除空格
+            var rpwd = $.trim($("#i2pwd").val());
+            if(rpwd!=""){
+                if(pwd==""&&rpwd==""){
+                    //若都为空，则提示密码不能为空，为了用户体验（在界面上用required同时做了处理）
+                    $("#msg_pwd").html("<font color='red'>密码不能为空</font>");
+                }
+                else{
+                    if(pwd==rpwd){ //相同则提示密码匹配
+                        $("#msg_pwd").html("<font color='green'>两次密码匹配通过</font>");
+                        $("#btn_register").attr("disabled",false); //使按钮无法点击
+                    }else{ //不相同则提示密码匹配
+                        $("#msg_pwd").html("<font color='red'>两次密码不匹配</font>");
+                        $("#btn_register").attr("disabled",true);
+                    }
+                }}
+        })
+    })
+
+    //由于是两个输入框，所以进行两个输入框的几乎相同的判断
+    $(document).ready(function(){
+        $('#i2pwd').on('input propertychange', function() {
+            var pwd = $.trim($(this).val());
+            var rpwd = $.trim($("#password").val());
+            if(pwd==""&&rpwd==""){
+                $("#msg_pwd").html("<font color='red'>密码不能为空</font>");
+            }
+            else{
+                if(pwd==rpwd){
+                    $("#msg_pwd").html("<font color='green'>两次密码匹配通过</font>");
+                    $("#btn_register").attr("disabled",false);
+                }else{
+                    $("#msg_pwd").html("<font color='red'>两次密码不匹配</font>");
+                    $("#btn_register").attr("disabled",true);
+                }
+            }
+        })
+    })
+</script>
 </body>
 </html>

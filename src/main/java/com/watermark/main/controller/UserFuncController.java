@@ -121,13 +121,13 @@ public class UserFuncController {
             //将文件信息保存到数据库
             //为了查询下载提供密钥，还需要保存密钥信息到datasource数据库
             DataSource dataSource = this.saveDataSourceFile(hashName.toString(),originalFilename,
-                    path + hashName.toString(),date,user,K,M,markedLine);
+                    path + hashName.toString(),date,user,K,M,markedLine+1);
 
             //保存密钥K,M,markedLine到数据库
-            this.saveKeyInfo(K,M,markedLine,user,dataSource);
+            this.saveKeyInfo(K,M,markedLine+1,user,dataSource);
 
             //告诉页面上传成功了
-            mp.addAttribute("result_file", "上传成功");
+            mp.addAttribute("result_file", "嵌入成功");
             logInfoService.save("上传文件并嵌入水印", 1, 0);
         } catch (IOException e) {
             e.printStackTrace();
@@ -153,7 +153,7 @@ public class UserFuncController {
      * @return /user/keymanager
      */
     @RequestMapping("/keymanager")
-    public String keyManager(ModelMap mp, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "4") int pageSize) {
+    public String keyManager(ModelMap mp, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "7") int pageSize) {
         //获取上传者用户名
         UserInfo user = (UserInfo) SecurityUtils.getSubject().getPrincipal();
         Page<WaterMarkKey> waterMarkKeyList = waterMarkKeyService.getUserKeyList(user, pageNum, pageSize);

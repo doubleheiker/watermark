@@ -1,182 +1,246 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:include="header::header">
-<body>
-<div class="main-content">
-    <div class="main-content-inner">
-        <div class="row">
-            <div class="col-sm-12">
-                <button id="addUserBtn" class="btn btn-block" data-toggle="modal" data-target="#myModaladd">
-                    <i class="ace-icon fa fa-check"></i>添加管理员用户
-                </button>
-            </div>
-            <br/>
-            <div class="col-sm-12">
-                <div class="space-4"></div>
-                <div class="space-4"></div>
-                <div class="space-4"></div>
-                <div class="with:80%">
-                    <table id="simple-table" class="table  table-bordered table-hover" style="width:100%;word-break: break-all;">
-                        <thead>
-                        <tr>
-                            <th hidden="hidden">序号</th>
-                            <th>用户名</th>
-                            <th>角色</th>
-                            <th>管理</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <!--each来进行for循环求值-->
-                        <tr  th:each="iter : ${lists}">
-                            <td hidden="hidden" th:text="${iter.getUid()}">1</td>
-                            <td th:text="${iter.getUsername()}">用户名</td>
-                            <td th:text="${iter.getRoleList().get(0).getDescription()}">角色</td>
-                            <td >
-                                <div class="btn-group">
-                                    <button class="btn btn-xs btn-danger delbtn" data-toggle="modal"
-                                            data-target="#myModal2">
-                                        <i class="ace-icon fa fa-trash-o bigger-120"></i> 删除
-                                    </button>
-                                    <button class="btn btn-xs btn-warning resetbtn" data-toggle="modal"
-                                            data-target="#myModal3">
-                                        <i class="ace-icon fa fa-trash-o bigger-120"></i> 重置密码
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+</head>
+<body id="page-top">
+<div id="navbar" th:replace="nav::nav"></div>
+<div id="wrapper">
+    <div id="sidebar" th:replace="sidebar::sidebar"></div>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#"><h4>水印密钥管理界面</h4></a>
+                </li>
+                <li class="breadcrumb-item active">密钥列表</li>
+            </ol>
 
-        </div>
-    </div>
-
-    <!-- /.main-content -->
-    <!-- Modal -->
-    <div class="modal fade" id="myModaladd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">添加管理员用户</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
+            <div class="main-content">
+                <div class="main-content-inner">
                     <div class="row">
                         <div class="col-sm-12">
-                            <div id="addform" class="form-group">
-                                <form id="addUserFrom" class="form-horizontal" role="form">
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label no-padding-right" for="addusername"><span class="red">*</span>帐户名：</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" id="addusername" name="username" placeholder="帐户名" class="col-xs-10 col-sm-5">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label no-padding-right" for="addpassword"><span class="red">*</span>密 码：</label>
-                                        <div class="col-sm-9">
-                                            <input type="password" id="addpassword" name="password" placeholder="密 码" class="col-xs-10 col-sm-5">
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                            <button id="addUserBtn" class="btn btn-success btn-block" data-toggle="modal" data-target="#myModaladd">
+                                <i class="ace-icon fa fa-check"></i>添加管理员用户
+                            </button>
                         </div>
+                        <br/>
                         <div class="col-sm-12">
-                            <div id="addhiddenAlert" hidden="hidden" class="col-sm-12 clearfix">
-                                <div class="alert alert-danger">
-                                    <strong>
-                                        <i class="ace-icon fa fa-times"></i>
-                                        警告！！
-                                    </strong>
-                                    请按要求填写所有选项！<span id="addalertmsgspan"></span>
-                                    <br>
-                                </div>
+                            <div class="space-4"></div>
+                            <div class="space-4"></div>
+                            <div class="space-4"></div>
+                            <div class="with:80%">
+                                <table id="simple-table" class="table  table-bordered table-hover" style="width:100%;word-break: break-all;">
+                                    <thead>
+                                    <tr>
+                                        <th hidden="hidden">序号</th>
+                                        <th>用户名</th>
+                                        <th>角色</th>
+                                        <th>管理</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!--each来进行for循环求值-->
+                                    <tr  th:each="iter : ${lists}">
+                                        <td hidden="hidden" th:text="${iter.getUid()}">1</td>
+                                        <td th:text="${iter.getUsername()}">用户名</td>
+                                        <td th:text="${iter.getRoleList().get(0).getDescription()}">角色</td>
+                                        <td >
+                                            <div class="btn-group">
+                                                <button class="btn btn-xs btn-danger delbtn" data-toggle="modal"
+                                                        data-target="#myModal2">
+                                                    <i class="ace-icon fa fa-trash-o bigger-120"></i> 删除
+                                                </button>
+                                                <button class="btn btn-xs btn-warning resetbtn" data-toggle="modal"
+                                                        data-target="#myModal3">
+                                                    <i class="ace-icon fa fa-trash-o bigger-120"></i> 重置密码
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div id="addSucAlert" hidden="hidden" class="col-sm-12 clearfix">
-                                <div class="alert alert-success">
-                                    <button type="button" class="close" data-dismiss="alert">
-                                        <i class="ace-icon fa fa-times"></i>
-                                    </button>
-                                    <strong>
-                                        <i class="ace-icon fa fa-times"></i>
-                                        添加成功！
-                                    </strong>
-                                    刷新页面
-                                    <br>
-                                </div>
-                            </div>
                         </div>
-                        <div>
-                            <p>&nbsp;&nbsp;1)密码不得与账号相同;账号长度为5到20字符;账号不得存在特殊字符;<br/>
-                                &nbsp;&nbsp;2)密码须8位以上20位以下,包括数字、大小写字母、特殊字符;<br/>
-                                &nbsp;&nbsp;3)所有输入框必须正确填写;<br/>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                            data-dismiss="modal">关闭</button>
-                    <button type="button" id="addbtn" class="btn btn-primary">确定添加</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel2">删除用户</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" >确定删除用户<span id="delusername"></span>吗？</div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                            data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="delbtn">确定删除</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel3">重置密码</h4>
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" >
-                    用户名：<p id="resetname"></p>
-                    重置密码为<span id="resetpassword"></span>吗？
-                    <div id="resetSucAlert" class="col-sm-12 clearfix" hidden="hidden">
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert"></button>
-                            <strong>
-                                重置成功！
-                            </strong>
-                            5秒后刷新页面
-                            <br>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                            data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="resetbtn">确定重置</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
+                    </div>
+                </div>
+
+                <div class="modal-footer no-margin-top">
+                    <ul class="pagination pull-right no-margin">
+
+                        <!-- 首页 -->
+                        <li>
+                            <a th:href="'/admin/userAdmin?pageNum=0'">首页</a>
+                        </li>
+
+                        <!-- 上一页 -->
+                        <li th:if="${lists.hasPrevious()}">
+                            <a th:href="'/admin/userAdmin?pageNum=' + ${lists.previousPageable().getPageNumber()}" th:text="上一页"></a>
+                        </li>
+
+                        <!-- 中间页 -->
+                        <li th:each="pageNum:${#numbers.sequence(0, lists.getTotalPages() - 1)}">
+                            <a th:href="'/admin/userAdmin?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum ne lists.pageable.getPageNumber()}"></a>
+                            <a th:href="'/admin/userAdmin?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum eq lists.pageable.getPageNumber()}" th:style="'font-weight:bold;background: #6faed9;'"></a>
+                        </li>
+
+                        <!-- 下一页 -->
+                        <li th:if="${lists.hasNext()}">
+                            <a th:href="'/admin/userAdmin?pageNum=' + ${lists.nextPageable().getPageNumber()}" th:text="下一页"></a>
+                        </li>
+
+                        <!-- 尾页 -->
+                        <li>
+                            <a th:href="'/admin/userAdmin?pageNum=' + ${lists.getTotalPages() - 1}">尾页</a>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <!-- /.main-content -->
+                <!-- Modal -->
+                <div class="modal fade" id="myModaladd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="myModalLabel">添加管理员用户</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="addform" class="form-group">
+                                            <form id="addUserFrom" class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label no-padding-right" for="addusername"><span class="red">*</span>帐户名：</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" id="addusername" name="username" placeholder="帐户名" class="col-xs-10 col-sm-5">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label no-padding-right" for="addpassword"><span class="red">*</span>密 码：</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="password" id="addpassword" name="password" placeholder="密 码" class="col-xs-10 col-sm-5">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div id="addhiddenAlert" hidden="hidden" class="col-sm-12 clearfix">
+                                            <div class="alert alert-danger">
+                                                <strong>
+                                                    <i class="ace-icon fa fa-times"></i>
+                                                    警告！！
+                                                </strong>
+                                                请按要求填写所有选项！<span id="addalertmsgspan"></span>
+                                                <br>
+                                            </div>
+                                        </div>
+                                        <div id="addSucAlert" hidden="hidden" class="col-sm-12 clearfix">
+                                            <div class="alert alert-success">
+                                                <button type="button" class="close" data-dismiss="alert">
+                                                    <i class="ace-icon fa fa-times"></i>
+                                                </button>
+                                                <strong>
+                                                    <i class="ace-icon fa fa-times"></i>
+                                                    添加成功！
+                                                </strong>
+                                                刷新页面
+                                                <br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p>&nbsp;&nbsp;1)密码不得与账号相同;账号长度为5到20字符;账号不得存在特殊字符;<br/>
+                                            &nbsp;&nbsp;2)密码须8位以上20位以下,包括数字、大小写字母、特殊字符;<br/>
+                                            &nbsp;&nbsp;3)所有输入框必须正确填写;<br/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">关闭</button>
+                                <button type="button" id="addbtn" class="btn btn-primary">确定添加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="myModalLabel2">删除用户</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" >确定删除用户<span id="delusername"></span>吗？</div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary" id="delbtn">确定删除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="myModalLabel3">重置密码</h4>
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" >
+                                用户名：<p id="resetname"></p>
+                                重置密码为<span id="resetpassword"></span>吗？
+                                <div id="resetSucAlert" class="col-sm-12 clearfix" hidden="hidden">
+                                    <div class="alert alert-success">
+                                        <button type="button" class="close" data-dismiss="alert"></button>
+                                        <strong>
+                                            重置成功！
+                                        </strong>
+                                        5秒后刷新页面
+                                        <br>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        data-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary" id="resetbtn">确定重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © wm 2021</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
 </div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
 
 <!-- inline scripts related to this page -->
 <script type="text/javascript">

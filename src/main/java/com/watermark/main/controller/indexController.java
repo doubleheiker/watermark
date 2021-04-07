@@ -52,7 +52,13 @@ public class indexController {
     }
 
     @GetMapping("/")
-    public String index() {
+    public String index(ModelMap mp) {
+        //获取上传者用户名
+        UserInfo user = (UserInfo) SecurityUtils.getSubject().getPrincipal();
+        if (user != null) {
+            String username = user.getUsername();
+            mp.addAttribute("username", username);
+        }
         return "index";
     }
 
@@ -61,7 +67,7 @@ public class indexController {
 //        return "search";
 //    }
     @RequestMapping("/toSearch")
-    public String toSearch(ModelMap mp, HttpServletRequest request, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "4") int pageSize) {
+    public String toSearch(ModelMap mp, HttpServletRequest request, @RequestParam(value = "pageNum", defaultValue = "0") int pageNum, @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
         if (request.getParameter("name") == null) {
             Page<DataSource> fileList = dataSourceService.getFileList(pageNum, pageSize);
             mp.addAttribute("fileList", fileList);

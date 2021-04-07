@@ -27,6 +27,11 @@ public class MyShiroRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         UserInfo currentUser = (UserInfo) principals.getPrimaryPrincipal();
 
+        //session
+        Subject currentSubject = SecurityUtils.getSubject();
+        Session session = currentSubject.getSession();
+        session.setAttribute("loginUser", currentUser);
+
         for (SysRole role:currentUser.getRoleList()) {
             info.addRole(role.getRole());
             for (SysPermission perms:role.getPermissons()) {
@@ -44,14 +49,14 @@ public class MyShiroRealm extends AuthorizingRealm {
         //根据用户名查找到登录用户，并保存到UserInfo对象中
         UserInfo user = userInfoService.findByUsername(userToken.getUsername());
 
+
         if (user == null) {
             return null; //抛出 UnknownAccountException
         }
-
         //session
-        Subject currentSubject = SecurityUtils.getSubject();
-        Session session = currentSubject.getSession();
-        session.setAttribute("loginUser", user);
+//        Subject currentSubject = SecurityUtils.getSubject();
+//        Session session = currentSubject.getSession();
+//        session.setAttribute("loginUser", user);
 
         //密码认证shiro自动完成，principal设置为user，这样授权函数中可以获取到设置的principal
         return new SimpleAuthenticationInfo(user,user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()),getName());

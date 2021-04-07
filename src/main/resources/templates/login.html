@@ -2,21 +2,52 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:include="header::header">
 </head>
-<body>
-<hr>
-<p th:text="${msg}" style="color:red;"></p>
-<form th:action="@{/login}" method="post">
-    <div class="container">
-        <div>
-            <input id="user_name" name="username" type="text" placeholder="用户名"/>
+<body id="page-top">
+<div id="navbar" th:replace="nav::nav"></div>
+<div id="wrapper">
+    <div id="sidebar" th:replace="sidebar::sidebar"></div>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#"><h4>用户登录界面</h4></a>
+                </li>
+                <li class="breadcrumb-item active">登录</li>
+            </ol>
+            <br>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form th:action="@{/login}" method="post">
+                            <div class="form-group">
+                                <label>用户名：</label>
+                                <input id="user_name" name="username" type="text" placeholder="用户名"/>
+                            </div>
+                            <br />
+                            <div class="form-group">
+                                <label>密&nbsp;&nbsp;&nbsp;码：</label>
+                                <input id="password" name="password" type="password" placeholder="密码"/>
+                            </div>
+                            <div>
+                                <span id="basic-addon0">&nbsp;</span>
+                                <span style="font-size: 14px;color: red" th:text="${msg}" aria-describedby="basic-addon0"></span>
+                            </div>
+                            <br />
+                            <button class="btn btn-primary" type="submit" style="width:190px;">登 录</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br />
-        <div>
-            <input id="password" name="password" type="password" placeholder="密码"/>
-        </div>
-        <br />
-        <button class="btn btn-primary" type="submit" style="width:190px;">登 录</button>
     </div>
-</form>
+</div>
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+
 </body>
 </html>

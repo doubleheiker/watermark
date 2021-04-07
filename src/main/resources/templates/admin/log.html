@@ -1,83 +1,112 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="UTF-8"/>
-    <title>数据库水印系统</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+<head th:include="header::header">
 </head>
-<body class="container">
-<br/>
-<h1>用户日志</h1>
-<br/><br/>
+<body id="page-top">
+<div id="navbar" th:replace="nav::nav"></div>
+<div id="wrapper">
+    <div id="sidebar" th:replace="sidebar::sidebar"></div>
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#"><h4>水印密钥管理界面</h4></a>
+                </li>
+                <li class="breadcrumb-item active">密钥列表</li>
+            </ol>
 
-<form action="#" th:action="@{/admin/search}" method="post">
-    按&nbsp;<select name="searchMode">
-        <option value="----">   ------</option>
-        <option th:value="searchByUser">用户名</option>
-        <option th:value="searchByStatus">状态（1:成功 0:失败）</option>
-        <option th:value="searchByDate">日期（YYYY-MM-DD）</option>
-    </select>
-    <input type="text" name="name" />
-    <input type="submit" value="Search" name="searchButton" />
-</form>
-<br/><br/>
+            <form action="#" th:action="@{/admin/search}" method="post">
+                <div class="input-group">
+                    按&nbsp;<select name="searchMode">
+                    <option value="----">   ------</option>
+                    <option th:value="searchByUser">用户名</option>
+                    <option th:value="searchByStatus">状态（1:成功 0:失败）</option>
+                    <option th:value="searchByDate">日期（YYYY-MM-DD）</option>
+                    </select>
+                    <input type="text" name="name" />
+                    <div class="input-group-btn">
+                        <button type="submit" name="searchButton" class="btn btn-sm btn-primary">搜&nbsp;&nbsp;索</button>
+                    </div>
+                </div>
+            </form>
+            <br/>
 
-<div class="with:80%">
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>操作内容</th>
-            <th>时间</th>
-            <th>操作者</th>
-            <th>状态</th>
-            <th>管理</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!--each来进行for循环求值-->
-        <tr  th:each="log : ${logList}">
-            <td th:text="${log.getContent()}">内容</td>
-            <td th:text="${log.getDate()}">时间</td>
-            <td th:text="${log.getUsername()}">操作者</td>
-            <td th:text="成功" th:if="${log.getStatus() eq 1}" style="color:blue">状态</td>
-            <td th:text="失败" th:if="${log.getStatus() eq 0}" style="color:red">状态</td>
-            <td><a th:href="@{/admin/delete(id=${log.getLid()})}">删除</a></td>
-        </tr>
-        </tbody>
-    </table>
+            <div class="with:80%">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>操作内容</th>
+                        <th>时间</th>
+                        <th>操作者</th>
+                        <th>状态</th>
+                        <th>管理</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--each来进行for循环求值-->
+                    <tr  th:each="log : ${logList}">
+                        <td th:text="${log.getContent()}">内容</td>
+                        <td th:text="${log.getDate()}">时间</td>
+                        <td th:text="${log.getUsername()}">操作者</td>
+                        <td th:text="成功" th:if="${log.getStatus() eq 1}" style="color:blue">状态</td>
+                        <td th:text="失败" th:if="${log.getStatus() eq 0}" style="color:red">状态</td>
+                        <td><a th:href="@{/admin/delete(id=${log.getLid()})}">删除</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer no-margin-top">
+                <ul class="pagination pull-right no-margin">
+
+                    <!-- 首页 -->
+                    <li>
+                        <a th:href="'/admin/logAdmin?pageNum=0'">首页</a>
+                    </li>
+
+                    <!-- 上一页 -->
+                    <li th:if="${logList.hasPrevious()}">
+                        <a th:href="'/admin/logAdmin?pageNum=' + ${logList.previousPageable().getPageNumber()}" th:text="上一页"></a>
+                    </li>
+
+                    <!-- 中间页 -->
+                    <li th:each="pageNum:${#numbers.sequence(0, logList.getTotalPages() - 1)}">
+                        <a th:href="'/admin/logAdmin?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum ne logList.pageable.getPageNumber()}"></a>
+                        <a th:href="'/admin/logAdmin?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum eq logList.pageable.getPageNumber()}" th:style="'font-weight:bold;background: #6faed9;'"></a>
+                    </li>
+
+                    <!-- 下一页 -->
+                    <li th:if="${logList.hasNext()}">
+                        <a th:href="'/admin/logAdmin?pageNum=' + ${logList.nextPageable().getPageNumber()}" th:text="下一页"></a>
+                    </li>
+
+                    <!-- 尾页 -->
+                    <li>
+                        <a th:href="'/admin/logAdmin?pageNum=' + ${logList.getTotalPages() - 1}">尾页</a>
+                    </li>
+
+                </ul>
+            </div>
+
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © wm 2021</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
 </div>
 
-<div class="modal-footer no-margin-top">
-    <ul class="pagination pull-right no-margin">
 
-        <!-- 首页 -->
-        <li>
-            <a th:href="'/admin/logAdmin?pageNum=0'">首页</a>
-        </li>
 
-        <!-- 上一页 -->
-        <li th:if="${logList.hasPrevious()}">
-            <a th:href="'/admin/logAdmin?pageNum=' + ${logList.previousPageable().getPageNumber()}" th:text="上一页"></a>
-        </li>
-
-        <!-- 中间页 -->
-        <li th:each="pageNum:${#numbers.sequence(0, logList.getTotalPages() - 1)}">
-            <a th:href="'/admin/logAdmin?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum ne logList.pageable.getPageNumber()}"></a>
-            <a th:href="'/admin/logAdmin?pageNum=' + ${pageNum}" th:text="${pageNum + 1}" th:if="${pageNum eq logList.pageable.getPageNumber()}" th:style="'font-weight:bold;background: #6faed9;'"></a>
-        </li>
-
-        <!-- 下一页 -->
-        <li th:if="${logList.hasNext()}">
-            <a th:href="'/admin/logAdmin?pageNum=' + ${logList.nextPageable().getPageNumber()}" th:text="下一页"></a>
-        </li>
-
-        <!-- 尾页 -->
-        <li>
-            <a th:href="'/admin/logAdmin?pageNum=' + ${logList.getTotalPages() - 1}">尾页</a>
-        </li>
-
-    </ul>
-</div>
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
 
 </body>
 </html>

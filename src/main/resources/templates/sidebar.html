@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- Sidebar -->
+<ul th:fragment="sidebar" class="sidebar navbar-nav bg-colorful1">
+    <li class="nav-item active">
+        <a class="nav-link" th:href="@{/toSearch}">
+            <!--<i class="fas fa-fw fa-tachometer-alt"></i>-->
+            <i class="fas fa-laptop-code"></i>
+            <span>数据库查询</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/toDetect}">
+            <i class="fas fa-circle-notch"></i>
+            <span>水印检测</span></a>
+    </li>
+    <div shiro:hasRole="user">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/user/toEmbed}">
+                <i class="fas fa-edit"></i>
+                <span>水印嵌入</span></a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link" th:href="@{/user/keymanager}">
+            <i class="fas fa-marker"></i>
+            <span>水印密钥管理</span></a>
+        </li>
+    </div>
+
+    <div shiro:hasRole="admin">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/userAdmin}">
+                <i class="fas fa-marker"></i>
+                <span>用户管理</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/admin/logAdmin}">
+                <i class="fas fa-marker"></i>
+                <span>系统日志管理</span></a>
+        </li>
+    </div>
+</ul>
+</body>
+</html>

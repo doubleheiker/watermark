@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--彩色bar-->
+<nav th:fragment="nav" class="navbar navbar-expand navbar-dark bg-colorful static-top">
+
+    <a class="navbar-brand mr-1" href="/">
+        <img th:src="@{/img/watermark.png}" alt="logo" style="width:40px;">
+        数据库水印系统
+    </a>
+
+    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <ul class="navbar-nav">
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="nagware" data-toggle="dropdown">
+                功能
+            </a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" th:href="@{/toSearch}">数据库查询</a>
+                <a class="dropdown-item" th:href="@{/toDetect}">水印检测</a>
+                <div shiro:hasRole="user">
+                    <a class="dropdown-item" th:href="@{/user/toEmbed}">水印嵌入</a>
+                    <a class="dropdown-item" th:href="@{/user/keymanager}">水印密钥管理</a>
+                </div>
+                <div shiro:hasRole="admin">
+                    <a class="dropdown-item" th:href="@{/admin/userAdmin}">用户管理</a>
+                    <a class="dropdown-item" th:href="@{/admin/logAdmin}">系统日志管理</a>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <!--登录和注册-->
+    <ul class="navbar-nav ml-auto mr-md-0">
+        <li th:if="${session.loginUser!=null and username!=null}" class = "mx-2">
+            <a class="nav-link" href="#">
+                <p>你好！<span th:text="${username}"></span></p>
+            </a>
+        </li>
+        <li th:if="${session.loginUser!=null}">
+            <a class="nav-link" href="../logout">
+                <span>注销</span>
+            </a>
+        </li>
+        <li th:if="${session.loginUser==null}" class = "mx-2">
+            <a class="nav-link" th:href="@{/toLogin}">
+                <span>登录</span>
+            </a>
+        </li>
+        <li th:if="${session.loginUser==null}">
+            <a class="nav-link" th:href="@{/toRegister}">
+                <span> 注册</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>
