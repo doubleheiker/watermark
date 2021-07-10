@@ -219,7 +219,7 @@ public class ShiroConfiguration {
         sessionManager.setCacheManager(ehCacheManager());
 
         //全局会话超时时间（单位毫秒），默认30分钟  暂时设置为10秒钟 用来测试 600000
-        sessionManager.setGlobalSessionTimeout(600000);
+        sessionManager.setGlobalSessionTimeout(60000q);
         //sessionManager.setGlobalSessionTimeout(60000);
         //是否开启删除无效的session对象  默认为true
 

@@ -70,6 +70,12 @@ public class UserFuncController {
             logInfoService.save("未输入属性列号", 0, 3);
             return "/user/embed";
         }
+        Double M = Double.parseDouble(m);
+        if (M>125 || M<100) {
+            mp.addAttribute("result_file", "上传失败，安全参数M的值请处于100~125！！");
+            logInfoService.save("输入的M值不在规定范围", 0, 3);
+            return "/user/embed";
+        }
 
         //获取上传者用户名
         UserInfo user = (UserInfo) SecurityUtils.getSubject().getPrincipal();
@@ -106,7 +112,7 @@ public class UserFuncController {
 
             //调用嵌入API
             WaterMarking waterMark = new WaterMarking();
-            Double M = Double.parseDouble(m);
+
             Integer markedLine = Integer.parseInt(ml) - 1;
 
             //判断markedLine是否超过最大列，以及所选列是否是数值型
